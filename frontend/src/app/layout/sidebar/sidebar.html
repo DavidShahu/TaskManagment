@@ -1,0 +1,67 @@
+<div class="sidebar d-flex flex-column"  [class.collapsed]="isCollapsed">
+
+  <!-- Brand -->
+  <div class="sidebar-brand d-flex align-items-center px-4 py-3">
+    <span class="brand-icon me-2">✅</span>
+    <span class="brand-name">TaskFlow</span>
+    <button class="btn-toggle ms-auto" (click)="toggle()">✕</button>
+  </div>
+
+  <hr class="sidebar-divider">
+
+  <!-- User Info -->
+  <div class="user-info px-4 mb-3">
+    <div class="d-flex align-items-center gap-2">
+      <div class="user-avatar">
+        {{ user?.fullName?.charAt(0) ?? 'U' }}
+      </div>
+      <div>
+        <div class="user-name">{{ user?.fullName }}</div>
+        <div class="user-role">{{ user?.role }}</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="sidebar-divider">
+
+  <!-- Main Menu -->
+  <ul class="nav flex-column px-3 flex-grow-1">
+    <li class="nav-section-label px-2 mb-1">MAIN MENU</li>
+    @for (item of menuItems; track item.route) {
+      <li class="nav-item mb-1">
+        
+        <a  class="nav-link d-flex align-items-center gap-2"
+          [routerLink]="item.route"
+          routerLinkActive="active">
+          <span class="nav-icon">{{ item.icon }}</span>
+          <span>{{ item.label }}</span>
+        </a>
+      </li>
+    }
+
+    <!-- Admin Section -->
+    @if (isAdmin()) {
+      <li class="nav-section-label px-2 mt-3 mb-1">ADMIN</li>
+      @for (item of adminItems; track item.route) {
+        <li class="nav-item mb-1">
+          
+          <a  class="nav-link d-flex align-items-center gap-2"
+            [routerLink]="item.route"
+            routerLinkActive="active">
+            <span class="nav-icon">{{ item.icon }}</span>
+            <span>{{ item.label }}</span>
+          </a>
+        </li>
+      }
+    }
+  </ul>
+
+  <!-- Logout -->
+  <!-- <div class="px-3 pb-4">
+    <hr class="sidebar-divider">
+    <button class="btn btn-logout w-100" (click)="logout()">
+      🚪 Sign Out
+    </button>
+  </div> -->
+
+</div>

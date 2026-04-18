@@ -1,0 +1,77 @@
+.project-detail {
+  .btn-back {
+    background: none;
+    border: none;
+    color: #667eea;
+    font-weight: 600;
+    padding: 0;
+    &:hover { color: #764ba2; }
+  }
+}
+
+.project-header {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.detail-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  height: 100%;
+}
+
+.member-item {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f0f0f0;
+  &:last-child { border-bottom: none; }
+}
+
+.member-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.member-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #2d3748;
+}
+
+.member-email {
+  font-size: 0.75rem;
+  color: #718096;
+}
+
+.add-member-form {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 0.75rem;
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+  }
+}
+
+.btn-ghost {
+  background: none;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  &:hover { background: #fff5f5; }
+}

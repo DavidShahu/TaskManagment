@@ -1,0 +1,132 @@
+<div class="projects-page">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="fw-bold mb-1">Projects</h4>
+      <p class="text-muted mb-0">
+        {{ getActiveCount() }} active projects
+      </p>
+    </div>
+    @if (isAdmin) {
+      <button class="btn btn-primary" (click)="openCreate()">
+        + New Project
+      </button>
+    }
+  </div>
+
+  <!-- Loading -->
+  @if (isLoading) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!isLoading && projects.length === 0) {
+    <div class="empty-state text-center py-5">
+      <div class="empty-icon mb-3">📁</div>
+      <h5 class="text-muted">No projects yet</h5>
+      @if (isAdmin) {
+        <p class="text-muted">Create your first project to get started</p>
+        <button class="btn btn-primary" (click)="openCreate()">
+          + New Project
+        </button>
+      }
+    </div>
+  }
+
+  <!-- Projects Grid -->
+  @if (!isLoading && projects.length > 0) {
+    <div class="row g-4">
+      @for (project of projects; track project.id) {
+        <div class="col-md-4">
+          <div class="project-card" [class.inactive]="!project.isActive">
+
+            <!-- Status Badge -->
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <span class="badge"
+                [class.bg-success]="project.isActive"
+                [class.bg-secondary]="!project.isActive">
+                {{ project.isActive ? 'Active' : 'Inactive' }}
+              </span>
+              @if (isAdmin) {
+                <div class="dropdown">
+                  <button class="btn btn-sm btn-ghost"
+                    data-bs-toggle="dropdown">⋮</button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <button class="dropdown-item"
+                        (click)="openEdit(project)">
+                        ✏️ Edit
+                      </button>
+                    </li>
+                    @if (project.isActive) {
+                      <li>
+                        <button class="dropdown-item text-danger"
+                          (click)="delete(project.id)">
+                          🗑️ Delete
+                        </button>
+                      </li>
+                    } @else {
+                      <li>
+                        <button class="dropdown-item text-success"
+                          (click)="activate(project.id)">
+                          ✅ Activate
+                        </button>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              }
+            </div>
+
+            <!-- Project Info -->
+            <h5 class="project-name">{{ project.name }}</h5>
+            <p class="project-desc text-muted">
+              {{ project.description || 'No description' }}
+            </p>
+
+            <!-- Members -->
+            <div class="members-row d-flex align-items-center gap-1 mb-3">
+              @for (member of project.members.slice(0, 4); track member.userId) {
+                <div class="member-avatar" [title]="member.fullName">
+                  {{ member.fullName.charAt(0) }}
+                </div>
+              }
+              @if (project.members.length > 4) {
+                <div class="member-avatar more">
+                  +{{ project.members.length - 4 }}
+                </div>
+              }
+              @if (project.members.length === 0) {
+                <span class="text-muted small">No members</span>
+              }
+            </div>
+
+            <!-- Footer -->
+            <div class="d-flex justify-content-between align-items-center">
+              <small class="text-muted">
+                By {{ project.createdByName }}
+              </small>
+              <a [routerLink]="['/projects', project.id]"
+                class="btn btn-sm btn-outline-primary">
+                View →
+              </a>
+            </div>
+
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Project Form Modal -->
+  @if (showForm) {
+    <app-project-form
+      [project]="selectedProject"
+      (close)="onFormClose($event)">
+    </app-project-form>
+  }
+
+</div>

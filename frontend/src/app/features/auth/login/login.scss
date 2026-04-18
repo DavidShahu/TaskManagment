@@ -1,0 +1,50 @@
+.auth-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  border: none;
+  border-radius: 16px;
+
+  .app-icon {
+    font-size: 3rem;
+  }
+
+  .app-title {
+    font-size: 1.8rem;
+    color: #2d3748;
+  }
+
+  .form-control {
+    border-radius: 10px;
+    border: 1.5px solid #e2e8f0;
+    padding: 0.75rem 1rem;
+    transition: all 0.2s;
+
+    &:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+    }
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 10px;
+    padding: 0.75rem;
+    font-weight: 600;
+    transition: all 0.2s;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    &:disabled {
+      opacity: 0.7;
+    }
+  }
+}

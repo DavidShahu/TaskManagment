@@ -1,0 +1,139 @@
+<div class="project-detail">
+
+  <!-- Back Button -->
+  <button class="btn btn-back mb-4" (click)="goBack()">
+    ← Back to Projects
+  </button>
+
+  <!-- Loading -->
+  @if (isLoading) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (errorMessage) {
+    <div class="alert alert-danger">⚠️ {{ errorMessage }}</div>
+  }
+
+  @if (!isLoading && project) {
+    <!-- Project Header -->
+    <div class="project-header mb-4">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <h3 class="fw-bold mb-0">{{ project.name }}</h3>
+            <span class="badge"
+              [class.bg-success]="project.isActive"
+              [class.bg-secondary]="!project.isActive">
+              {{ project.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+          <p class="text-muted mb-1">
+            {{ project.description || 'No description provided' }}
+          </p>
+          <small class="text-muted">
+            Created by {{ project.createdByName }} on
+            {{ formatDate(project.createdAt) }}
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+
+      <!-- Members Section -->
+      <div class="col-md-5">
+        <div class="detail-card">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-bold mb-0">
+              👥 Members ({{ project.members.length }})
+            </h6>
+            @if (isAdmin) {
+              <button class="btn btn-sm btn-outline-primary"
+                (click)="showAddMember = !showAddMember">
+                + Add Member
+              </button>
+            }
+          </div>
+
+          <!-- Add Member Form -->
+          @if (showAddMember && isAdmin) {
+            <div class="add-member-form mb-3">
+              <select class="form-select form-select-sm mb-2"
+                [(ngModel)]="selectedUserId">
+                <option value="">Select a user...</option>
+                @for (user of availableUsers; track user.id) {
+                  <option [value]="user.id">
+                    {{ user.firstName }} {{ user.lastName }}
+                    ({{ user.email }})
+                  </option>
+                }
+              </select>
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-primary flex-grow-1"
+                  (click)="addMember()"
+                  [disabled]="!selectedUserId">
+                  Add
+                </button>
+                <button class="btn btn-sm btn-light"
+                  (click)="showAddMember = false">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          }
+
+          <!-- Members List -->
+          @if (project.members.length === 0) {
+            <div class="text-center py-3 text-muted">
+              <p class="mb-0">No members yet</p>
+            </div>
+          }
+
+          @for (member of project.members; track member.userId) {
+            <div class="member-item d-flex align-items-center
+              justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="member-avatar">
+                  {{ member.fullName.charAt(0) }}
+                </div>
+                <div>
+                  <div class="member-name">{{ member.fullName }}</div>
+                  <div class="member-email">{{ member.email }}</div>
+                </div>
+              </div>
+              @if (isAdmin) {
+                <button class="btn btn-sm btn-ghost text-danger"
+                  (click)="removeMember(member.userId, member.fullName)"
+                  title="Remove member">
+                  ✕
+                </button>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Tasks Section (placeholder for now) -->
+      <div class="col-md-7">
+        <div class="detail-card">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-bold mb-0">📋 Tasks</h6>
+            <button class="btn btn-sm btn-outline-primary">
+              + New Task
+            </button>
+          </div>
+          <div class="text-center py-5 text-muted">
+            <div style="font-size: 2rem" class="mb-2">📋</div>
+            <p class="mb-0">No tasks yet</p>
+            <small>Tasks will appear here once created</small>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  }
+
+</div>

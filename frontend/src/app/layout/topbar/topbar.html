@@ -1,0 +1,44 @@
+<nav class="topbar d-flex align-items-center justify-content-between px-4" [style.left]="isCollapsed ? '70px' : '260px'">
+  <div class="page-title">
+    <h5 class="mb-0 fw-semibold">Welcome back, {{ user?.fullName }}! </h5>
+    <small class="text-muted">Here's what's happening today</small>
+  </div>
+
+  <div class="d-flex align-items-center gap-3">
+    <div class="notification-btn">
+      🔔
+    </div>
+
+    
+    <div class="position-relative">
+      <div class="user-chip d-flex align-items-center gap-2"
+        (click)="toggleDropdown()"
+        style="cursor:pointer">
+        <div class="user-avatar">
+          {{ user?.fullName?.charAt(0) ?? 'U' }}
+        </div>
+        <span class="user-name">{{ user?.fullName }}</span>
+        <span class="ms-1">{{ dropdownOpen ? '▲' : '▼' }}</span>
+      </div>
+
+      @if (dropdownOpen) {
+        <div class="dropdown-menu show shadow">
+          <!-- User Info -->
+          <div class="px-3 py-2">
+            <div class="fw-semibold">{{ user?.fullName }}</div>
+            <div class="text-muted small">{{ user?.email }}</div>
+            <span class="badge mt-1"
+              [class.bg-danger]="user?.role === 'Admin'"
+              [class.bg-primary]="user?.role !== 'Admin'">
+              {{ user?.role }}
+            </span>
+          </div>
+          <hr class="dropdown-divider">
+          <button class="dropdown-item text-danger" (click)="logout()">
+            🚪 Sign Out
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</nav>

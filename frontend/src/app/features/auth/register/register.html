@@ -1,0 +1,105 @@
+<div class="min-vh-100 d-flex align-items-center justify-content-center auth-bg">
+  <div class="card auth-card shadow-lg my-4">
+
+    <div class="card-body p-5">
+      <!-- Title -->
+      <div class="text-center mb-4">
+        <h2 class="fw-bold app-title">Create Account</h2>
+        <p class="text-muted">Join TaskFlow today</p>
+      </div>
+
+      <!-- Error Alert -->
+      @if (errorMessage) {
+        <div class="alert alert-danger" role="alert">
+           {{ errorMessage }}
+        </div>
+      }
+
+      <!-- Form -->
+      <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+        
+        <div class="row mb-3">
+          <div class="col">
+            <label class="form-label fw-semibold">First Name</label>
+            <input
+              type="text"
+              class="form-control form-control-lg"
+              placeholder="John"
+              [(ngModel)]="request.firstName"
+              name="firstName"
+              required/>
+          </div>
+          <div class="col">
+            <label class="form-label fw-semibold">Last Name</label>
+            <input
+              type="text"
+              class="form-control form-control-lg"
+              placeholder="Doe"
+              [(ngModel)]="request.lastName"
+              name="lastName"
+              required/>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Email address</label>
+          <input
+            type="email"
+            class="form-control form-control-lg"
+            placeholder="you@example.com"
+            [(ngModel)]="request.email"
+            name="email"
+            required
+            email/>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Password</label>
+          <input
+            type="password"
+            class="form-control form-control-lg"
+            placeholder="Min. 8 characters"
+            [(ngModel)]="request.password"
+            name="password"
+            required
+            minlength="8"/>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Confirm Password</label>
+          <input
+            type="password"
+            class="form-control form-control-lg"
+            placeholder="Repeat your password"
+            [(ngModel)]="confirmPassword"
+            name="confirmPassword"
+            required/>
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-primary btn-lg w-100"
+          [disabled]="isLoading || registerForm.invalid">
+          @if (isLoading) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Creating account...
+          } @else {
+            Create Account
+          }
+        </button>
+
+      </form>
+
+      <!-- Login Link -->
+      <div class="text-center mt-4">
+        <p class="text-muted mb-0">
+          Already have an account?
+          <a routerLink="/login" class="text-primary fw-semibold">
+            Sign in
+          </a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>

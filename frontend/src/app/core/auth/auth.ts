@@ -1,0 +1,88 @@
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+import { ErrorHandlerService } from '../services/error-handler.service';
+
+
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  email: string;
+  fullName: string;
+  role: string;
+  expiresAt: string;
+}
+
+
+
+@Injectable({
+  providedIn: 'root',
+})
+export class Auth {
+
+
+  private apiUrl = 'https://localhost:7145/api';
+
+  constructor(private http: HttpClient, private errorHandler : ErrorHandlerService) {}
+
+  login(request: LoginRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, request)
+      .pipe(
+        tap(response => this.saveToken(response)),
+        catchError((err: HttpErrorResponse) =>
+          this.errorHandler.handle(err)));
+  }
+
+
+  register(request: RegisterRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, request)
+      .pipe(
+        tap(response => this.saveToken(response)),
+        catchError((err: HttpErrorResponse) =>
+          this.errorHandler.handle(err)));
+  }
+
+  logout(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  }
+
+  private saveToken(response: AuthResponse): void {
+    localStorage.setItem('token', response.token);
+    localStorage.setItem('user', JSON.stringify({
+      email: response.email,
+      fullName: response.fullName,
+      role: response.role
+    }));
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
+  getUser(): { email: string, fullName: string, role: string } | null {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.getToken();
+  }
+
+  isAdmin(): boolean {
+    return this.getUser()?.role === 'Admin';
+  }
+}
