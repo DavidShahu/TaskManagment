@@ -48,7 +48,7 @@ namespace Infrastructure.Persistence.Repositories
             return memberAlreadyExists;
         }
          
-        public async Task AddMemberAsync(ProjectMember projectMember , CancellationToken cancellationToken = default) => _context.ProjectMembers.AddAsync(projectMember, cancellationToken);
+        public async Task AddMemberAsync(ProjectMember projectMember , CancellationToken cancellationToken = default) => await _context.ProjectMembers.AddAsync(projectMember, cancellationToken);
 
         public async Task RemoveMemberAsync(  Guid projectId, Guid userId, CancellationToken cancellationToken = default)
         {

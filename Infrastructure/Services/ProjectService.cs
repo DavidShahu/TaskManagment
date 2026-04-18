@@ -74,7 +74,7 @@ namespace Infrastructure.Services
         {
             var projectToAdd = Project.Create(
                     request.Name,
-                    request.Description,
+                    request.Description ?? null,
                     createdByUserId
                 );
 
