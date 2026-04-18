@@ -1,0 +1,341 @@
+<div class="task-detail">
+
+  <!-- Back Button -->
+  <button class="btn btn-back mb-4" (click)="goBack()">
+    ← Back to Tasks
+  </button>
+
+  <!-- Loading -->
+  @if (isLoading) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (errorMessage) {
+    <div class="alert alert-danger">⚠️ {{ errorMessage }}</div>
+  }
+
+  @if (!isLoading && task) {
+
+    <!-- Header -->
+    <div class="task-header mb-4">
+      <div class="d-flex justify-content-between align-items-start">
+        <div class="flex-grow-1">
+          <div class="d-flex align-items-center gap-3 mb-2">
+            <h3 class="fw-bold mb-0">{{ task.title }}</h3>
+            <span class="badge status-badge"
+              [class.bg-success]="task.status === 'Done'"
+              [class.bg-primary]="task.status === 'Open' && !task.isOverdue"
+              [class.bg-danger]="task.isOverdue">
+              @if (task.isOverdue) { ⚠️ Overdue }
+              @else { {{ task.status }} }
+            </span>
+          </div>
+          @if (task.description) {
+            <p class="text-muted mb-0">{{ task.description }}</p>
+          } @else {
+            <p class="text-muted fst-italic mb-0">No description</p>
+          }
+        </div>
+
+        <!-- Actions -->
+         
+        <div class="d-flex gap-2 ms-3">
+         @if (task.ownerId === currentUserId) {
+            <button class="btn btn-outline-primary btn-sm"
+                (click)="toggleStatus()">
+                {{ task.status === 'Open' ? '✅ Mark Done' : '🔄 Reopen' }}
+            </button>
+          }
+          @if (isAdmin || !task.isAssignedByAdmin) {
+            <button class="btn btn-outline-secondary btn-sm"
+              (click)="showEditForm = true">
+              ✏️ Edit
+            </button>
+            <button class="btn btn-outline-danger btn-sm"
+              (click)="delete()">
+              🗑️
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+
+      <!-- Left Column — Task Details -->
+      <div class="col-md-4">
+        <div class="detail-card">
+          <h6 class="fw-bold mb-3">📋 Task Details</h6>
+
+          <div class="detail-item">
+            <span class="detail-label">Owner</span>
+            <span class="detail-value">
+              <div class="user-chip">
+                <div class="mini-avatar">
+                  {{ task.ownerName.charAt(0) }}
+                </div>
+                {{ task.ownerName }}
+              </div>
+            </span>
+          </div>
+          
+          <div class="detail-item">
+            <span class="detail-label">Type</span>
+            <span class="detail-value">
+              @if (task.taskTypeName) {
+                <span class="type-chip"
+                  [style.background]="task.taskTypeColor + '20'"
+                  [style.color]="task.taskTypeColor">
+                  {{ task.taskTypeIcon }} {{ task.taskTypeName }}
+                </span>
+              } @else {
+                <span class="text-muted">No type</span>
+              }
+            </span>
+          </div>
+          
+          <div class="detail-item">
+            <span class="detail-label">Project</span>
+            <span class="detail-value">
+              @if (task.projectName) {
+                <a [routerLink]="['/projects', task.projectId]"
+                  class="text-primary">
+                  📁 {{ task.projectName }}
+                </a>
+              } @else {
+                <span class="text-muted">No project</span>
+              }
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Due Date</span>
+            <span class="detail-value"
+              [class.text-danger]="task.isOverdue">
+              @if (task.dueDate) {
+                📅 {{ formatDate(task.dueDate) }}
+                @if (task.isOverdue) { (Overdue) }
+              } @else {
+                <span class="text-muted">No due date</span>
+              }
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Created</span>
+            <span class="detail-value text-muted">
+              {{ formatDate(task.createdAt) }}
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Status</span>
+            <span class="detail-value">
+              <span class="badge"
+                [class.bg-success]="task.status === 'Done'"
+                [class.bg-primary]="task.status === 'Open'">
+                {{ task.status }}
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column — Time Tracking -->
+      <div class="col-md-8">
+        <div class="detail-card">
+          <h6 class="fw-bold mb-3">⏱️ Time Tracking</h6>
+
+          @if (task.estimatedHours) {
+            <!-- Progress -->
+            <div class="time-stats mb-3">
+              <div class="d-flex justify-content-between mb-1">
+                <span class="text-muted small">Progress</span>
+                <span class="fw-semibold small">
+                  {{ task.progressPercentage?.toFixed(0) }}%
+                </span>
+              </div>
+              <div class="progress mb-2" style="height: 8px">
+                <div class="progress-bar {{ progressColor }}"
+                  [style.width]="progressWidth">
+                </div>
+              </div>
+              <div class="d-flex justify-content-between">
+                <div class="time-stat">
+                  <div class="time-value">{{ task.loggedHours }}h</div>
+                  <div class="time-label">Logged</div>
+                </div>
+                <div class="time-stat text-center">
+                  <div class="time-value">{{ task.estimatedHours }}h</div>
+                  <div class="time-label">Estimated</div>
+                </div>
+                <div class="time-stat text-end">
+                  <div class="time-value"
+                    [class.text-danger]="(task.remainingHours ?? 0) === 0">
+                    {{ task.remainingHours }}h
+                  </div>
+                  <div class="time-label">Remaining</div>
+                </div>
+              </div>
+            </div>
+          } @else {
+            <div class="text-muted small mb-3">
+              No time estimate set — 
+              <button class="btn btn-link btn-sm p-0"
+                (click)="showEditForm = true">
+                add one
+              </button>
+            </div>
+            @if (task.loggedHours > 0) {
+              <div class="mb-3">
+                <span class="fw-semibold">{{ task.loggedHours }}h</span>
+                <span class="text-muted small"> logged total</span>
+              </div>
+            }
+          }
+
+          <hr>
+
+        @if (task.ownerId === currentUserId) {
+          <div class="timer-widget mb-4"
+              [class.active]="timerService.isRunning() && timerService.isActiveTask(task.id)"
+              [class.other-task]="timerService.isRunning() && !timerService.isActiveTask(task.id)">
+
+              @if (timerService.isRunning() && !timerService.isActiveTask(task.id)) {
+                <!-- Timer running on another task -->
+                <div class="d-flex align-items-center gap-2">
+                  <span class="text-warning">⚠️</span>
+                  <span class="small text-muted">
+                    Timer running on another task
+                  </span>
+                  <button class="btn btn-sm btn-outline-danger ms-auto"
+                    (click)="stopOtherTimer()">
+                    Stop other timer
+                  </button>
+                </div>
+              } @else {
+                <div class="d-flex align-items-center gap-3">
+                  <!-- Timer Display -->
+                  <div class="timer-display">
+                    @if (timerService.isRunning()) {
+                      {{ timerService.formatElapsed() }}
+                    } @else {
+                      00:00:00
+                    }
+                  </div>
+              
+                  <!-- Start/Stop Button -->
+                  @if (!timerService.isRunning()) {
+                    <button class="btn btn-success timer-btn"
+                      (click)="startTimer()">
+                      ▶ Start Timer
+                    </button>
+                  } @else {
+                    <button class="btn btn-danger timer-btn"
+                      (click)="stopTimer()">
+                      ⏹ Stop & Log
+                    </button>
+                  }
+              
+                  @if (timerService.isRunning()) {
+                    <span class="text-muted small">
+                      Click stop to auto-fill hours
+                    </span>
+                  }
+                </div>
+              }
+            </div>
+        
+
+          <!-- Log Time Form -->
+          <h6 class="fw-semibold mb-3">+ Log Time</h6>
+          <div class="log-time-form">
+            <div class="row g-2">
+              <div class="col-md-3">
+                <input type="number"
+                  class="form-control"
+                  placeholder="Hours"
+                  [(ngModel)]="logTimeForm.hours"
+                  min="0.5"
+                  max="24"
+                  step="0.5"/>
+              </div>
+              <div class="col-md-7">
+                <input type="text"
+                  class="form-control"
+                  placeholder="Note (optional)"
+                  [(ngModel)]="logTimeForm.note"/>
+              </div>
+              <div class="col-md-2">
+                <button class="btn btn-primary w-100"
+                  (click)="logTime()"
+                  [disabled]="isLoggingTime || !logTimeForm.hours">
+                  @if (isLoggingTime) {
+                    <span class="spinner-border spinner-border-sm"></span>
+                  } @else {
+                    Log
+                  }
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+          <!-- Time Log History -->
+          @if (task.timeLogs.length > 0) {
+            <hr>
+            <h6 class="fw-semibold mb-3">
+              History ({{ task.timeLogs.length }})
+            </h6>
+            <div class="time-log-list">
+              @for (log of task.timeLogs; track log.id) {
+                <div class="time-log-item">
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="mini-avatar">
+                      {{ log.userName.charAt(0) }}
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="d-flex justify-content-between">
+                        <span class="fw-semibold small">
+                          {{ log.userName }}
+                        </span>
+                        <span class="time-badge">
+                          +{{ log.hours }}h
+                        </span>
+                      </div>
+                      @if (log.note) {
+                        <div class="text-muted small">
+                          "{{ log.note }}"
+                        </div>
+                      }
+                      <div class="text-muted" style="font-size: 0.75rem">
+                        {{ formatDateTime(log.loggedAt) }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="text-center text-muted py-3 small">
+              No time logged yet
+            </div>
+          }
+
+        </div>
+      </div>
+
+    </div>
+  }
+
+  <!-- Edit Form Modal -->
+  @if (showEditForm && task) {
+    <app-task-form
+      [task]="task"
+      (close)="onEditClose($event)">
+    </app-task-form>
+  }
+
+</div>

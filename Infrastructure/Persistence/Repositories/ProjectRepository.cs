@@ -34,9 +34,9 @@ namespace Infrastructure.Persistence.Repositories
             return userProjects;
         }
 
-        public async Task<Project> GetByIdAsync(Guid projectId, CancellationToken cancellationToken = default)
+        public async Task<Project?> GetByIdAsync(Guid projectId, CancellationToken cancellationToken = default)
         {
-            Project project = await _context.Projects.Include(p => p.CreatedBy).Include(p => p.Members).ThenInclude(m => m.User).FirstOrDefaultAsync(p => p.Id == projectId, cancellationToken);
+            Project? project = await _context.Projects.Include(p => p.CreatedBy).Include(p => p.Members).ThenInclude(m => m.User).FirstOrDefaultAsync(p => p.Id == projectId, cancellationToken);
             return project;
         }
 

@@ -29,12 +29,14 @@
     <li class="nav-section-label px-2 mb-1">MAIN MENU</li>
     @for (item of menuItems; track item.route) {
       <li class="nav-item mb-1">
-        
-        <a  class="nav-link d-flex align-items-center gap-2"
+        <a class="nav-link d-flex align-items-center gap-2"
           [routerLink]="item.route"
-          routerLinkActive="active">
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }">
           <span class="nav-icon">{{ item.icon }}</span>
-          <span>{{ item.label }}</span>
+          @if (!isCollapsed) {
+            <span>{{ item.label }}</span>
+          }
         </a>
       </li>
     }
@@ -44,12 +46,14 @@
       <li class="nav-section-label px-2 mt-3 mb-1">ADMIN</li>
       @for (item of adminItems; track item.route) {
         <li class="nav-item mb-1">
-          
-          <a  class="nav-link d-flex align-items-center gap-2"
+          <a class="nav-link d-flex align-items-center gap-2"
             [routerLink]="item.route"
-            routerLinkActive="active">
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }">
             <span class="nav-icon">{{ item.icon }}</span>
-            <span>{{ item.label }}</span>
+            @if (!isCollapsed) {
+              <span>{{ item.label }}</span>
+            }
           </a>
         </li>
       }

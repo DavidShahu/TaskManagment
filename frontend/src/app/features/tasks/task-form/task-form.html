@@ -1,0 +1,145 @@
+<!-- Backdrop -->
+<div class="modal-backdrop" (click)="onClose()"></div>
+
+<!-- Modal -->
+<div class="modal-container">
+  <div class="modal-card">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h5 class="fw-bold mb-0">
+        {{ isEdit ? '✏️ Edit Task' : '📋 New Task' }}
+      </h5>
+      <button class="btn-close-custom" (click)="onClose()">✕</button>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #taskForm="ngForm">
+
+      <!-- Title -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Title *</label>
+        <input type="text" class="form-control"
+          placeholder="Task title"
+          [(ngModel)]="form.title"
+          name="title"
+          required
+          maxlength="200"/>
+      </div>
+
+      <!-- Description -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Description</label>
+        <textarea class="form-control"
+          placeholder="Optional description"
+          [(ngModel)]="form.description"
+          name="description"
+          rows="3">
+        </textarea>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Task Type</label>
+        <div class="task-type-grid">
+          <button type="button"
+            class="type-btn"
+            [class.selected]="!form.taskTypeId"
+            (click)="form.taskTypeId = undefined"> 
+            <span>None</span>
+          </button>
+          @for (type of taskTypes; track type.id) {
+            <button type="button"
+              class="type-btn"
+              [class.selected]="form.taskTypeId === type.id"
+              [style.border-color]="form.taskTypeId === type.id ? type.color : ''"
+              [style.background]="form.taskTypeId === type.id ? type.color + '20' : ''"
+              (click)="form.taskTypeId = type.id">
+              <span>{{ type.icon }}</span>
+              <span>{{ type.name }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <!-- Due Date -->
+        <div class="col">
+          <label class="form-label fw-semibold">Due Date</label>
+          <input type="date" class="form-control"
+            [(ngModel)]="form.dueDate"
+            name="dueDate"/>
+        </div>
+
+        <!-- Estimated Hours -->
+        <div class="col">
+          <label class="form-label fw-semibold">Estimated Hours</label>
+          <input type="number" class="form-control"
+            placeholder="e.g. 8"
+            [(ngModel)]="form.estimatedHours"
+            name="estimatedHours"
+            min="0.5"
+            step="0.5"/>
+        </div>
+      </div>
+
+      <!-- Project -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Project (optional)</label>
+        <select class="form-select"
+          [(ngModel)]="form.projectId" (ngModelChange)="onProjectChange()"
+          name="projectId">
+          <option [ngValue]="undefined">No project</option>
+          @for (project of projects; track project.id) {
+            <option [value]="project.id">{{ project.name }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Assign To (Admin only) -->
+      @if (isAdmin && !isEdit) {
+        <div class="mb-3">
+          <label class="form-label fw-semibold">
+            Assign To (Admin only)
+          </label>
+          @if (form.projectId && filteredUsers.length === 0) {
+            <div class="alert alert-warning py-2 small">
+              ⚠️ This project has no members yet. 
+              Add members to the project first.
+            </div>
+          } @else {
+            <select class="form-select"
+              [(ngModel)]="form.assignedToUserId"
+              name="assignedToUserId">
+              <option [ngValue]="undefined">Assign to myself</option>
+              @for (user of filteredUsers; track user.id) {
+                <option [value]="user.id">
+                  {{ user.firstName }} {{ user.lastName }}
+                  ({{ user.email }})
+                </option>
+              }
+            </select>
+            @if (form.projectId) {
+              <small class="text-muted">
+                Showing {{ filteredUsers.length }} project member(s)
+              </small>
+            }
+          }
+        </div>
+      }
+
+      <!-- Actions -->
+      <div class="d-flex gap-2 justify-content-end mt-4">
+        <button type="button" class="btn btn-light"
+          (click)="onClose()">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary"
+          [disabled]="isLoading || taskForm.invalid">
+          @if (isLoading) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+          }
+          {{ isEdit ? 'Save Changes' : 'Create Task' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

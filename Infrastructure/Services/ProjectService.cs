@@ -138,7 +138,7 @@ namespace Infrastructure.Services
             {
                 ProjectId = projectId,
                 UserId = userId,
-                JoinedAt = DateTime.UtcNow
+                JoinedAt = DateTime.Now
             };
 
             await _projectRepository.AddMemberAsync(member, cancellationToken);

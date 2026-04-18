@@ -18,7 +18,21 @@ export const routes: Routes = [
       { path: 'dashboard', component: Dashboard },
       { path: 'projects', loadComponent: () => import('./features/projects/project-list/project-list').then(m => m.ProjectList) },
       { path: 'projects/:id', loadComponent: () => import('./features/projects/project-detail/project-detail').then(m => m.ProjectDetail) },
-     
+      {
+        path: 'tasks/my',
+        loadComponent: () => import('./features/tasks/task-list/task-list')
+          .then(m => m.TaskList)
+      },
+      {
+        path: 'tasks',
+        loadComponent: () => import('./features/tasks/task-list/task-list')
+          .then(m => m.TaskList)
+      },
+      {
+        path: 'tasks/:id',
+        loadComponent: () => import('./features/tasks/task-detail/task-detail')
+          .then(m => m.TaskDetail)
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
    }

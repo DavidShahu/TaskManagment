@@ -1,6 +1,8 @@
 using Application.Auth.Interfaces;
 using Application.Common.Interfaces;
 using Application.Projects.Interfaces.Projects;
+using Application.Tasks.Interfaces;
+using Application.TaskTypes.Interfaces;
 using Application.Users.Interfaces;
 using AspNetCoreRateLimit;
 using Infrastructure.Persistence;
@@ -96,8 +98,10 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IUserService, UserService>();
-
-
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<ITaskTypeRepository, TaskTypeRepository>();
+builder.Services.AddScoped<ITaskTypeService, TaskTypeService>();
 
 
 // JWT Authentication

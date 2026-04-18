@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { ErrorHandlerService } from '../services/error-handler.service';
-
+import { TimerService } from '../services/timer.service';
 
 
 export interface LoginRequest {
@@ -24,6 +24,7 @@ export interface AuthResponse {
   fullName: string;
   role: string;
   expiresAt: string;
+  id : string,
 }
 
 
@@ -36,16 +37,29 @@ export class Auth {
 
   private apiUrl = 'https://localhost:7145/api';
 
-  constructor(private http: HttpClient, private errorHandler : ErrorHandlerService) {}
+  constructor(private http: HttpClient, private errorHandler : ErrorHandlerService, private timerService: TimerService) {}
+
+  // login(request: LoginRequest): Observable<AuthResponse> {
+  //   return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, request)
+  //     .pipe(
+  //       tap(response => this.saveToken(response)),
+  //       catchError((err: HttpErrorResponse) =>
+  //         this.errorHandler.handle(err)));
+  // }
+
 
   login(request: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, request)
+    return this.http.post<AuthResponse>(
+      `${this.apiUrl}/auth/login`, request)
       .pipe(
-        tap(response => this.saveToken(response)),
+        tap(response => {
+          this.saveToken(response);
+          // restore timer for this specific user after login
+          this.timerService.restoreTimer();
+        }),
         catchError((err: HttpErrorResponse) =>
           this.errorHandler.handle(err)));
   }
-
 
   register(request: RegisterRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, request)
@@ -56,6 +70,7 @@ export class Auth {
   }
 
   logout(): void {
+    this.timerService.clearLocalState();
     localStorage.removeItem('token');
     localStorage.removeItem('user');
   }
@@ -65,7 +80,8 @@ export class Auth {
     localStorage.setItem('user', JSON.stringify({
       email: response.email,
       fullName: response.fullName,
-      role: response.role
+      role: response.role,
+      id: response.id,  
     }));
   }
 
@@ -73,7 +89,7 @@ export class Auth {
     return localStorage.getItem('token');
   }
 
-  getUser(): { email: string, fullName: string, role: string } | null {
+  getUser(): {  id: string,  email: string, fullName: string, role: string } | null {
     const user = localStorage.getItem('user');
     return user ? JSON.parse(user) : null;
   }

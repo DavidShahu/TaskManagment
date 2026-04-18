@@ -41,7 +41,7 @@ namespace Infrastructure.Services
                 issuer: jwtSettings["Issuer"],
                 audience: jwtSettings["Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(
+                expires: DateTime.Now.AddHours(
                     double.Parse(jwtSettings["ExpiryHours"]!)),
                 signingCredentials: new SigningCredentials(
                     key, SecurityAlgorithms.HmacSha256));

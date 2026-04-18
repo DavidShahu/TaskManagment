@@ -62,3 +62,36 @@
   left: 260px;
   transition: left 0.3s ease;
 }
+.timer-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f0fff4;
+  border: 1px solid #68d391;
+  border-radius: 20px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #276749;
+  cursor: pointer;
+  font-family: monospace;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #c6f6d5;
+    transform: translateY(-1px);
+  }
+
+  .timer-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #48bb78;
+    animation: pulse 1.5s infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}

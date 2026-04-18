@@ -32,7 +32,7 @@ namespace Domain.Entities
 
         public User? CreatedBy { get; private set; }
         public ICollection<ProjectMember> Members { get; private set; } = new List<ProjectMember>();
-
+        public ICollection<TaskItem> Tasks { get; private set; }  = new List<TaskItem>();
 
         //creates new project
         public static Project Create( string name, string description, Guid createdByUserId)

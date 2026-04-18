@@ -57,10 +57,11 @@ namespace Infrastructure.Services
             return new AuthResponse
             {
                 Token = token,
+                Id = user.Id,
                 Email = user.Email,
                 FullName = $"{user.FirstName} {user.LastName}",
                 Role = user.Role.ToString(),
-                ExpiresAt = DateTime.UtcNow.AddHours(24)
+                ExpiresAt = DateTime.Now.AddHours(24)
             };
         }
 
@@ -85,10 +86,11 @@ namespace Infrastructure.Services
             return new AuthResponse
             {
                 Token = token,
+                Id = user.Id,
                 Email = user.Email,
                 FullName = $"{user.FirstName} {user.LastName}",
                 Role = user.Role.ToString(),
-                ExpiresAt = DateTime.UtcNow.AddHours(24)
+                ExpiresAt = DateTime.Now.AddHours(24)
             };
         }
 

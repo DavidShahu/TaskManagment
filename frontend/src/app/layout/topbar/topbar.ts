@@ -5,12 +5,13 @@ import { Auth } from '../../core/auth/auth';
 
 import { Router } from '@angular/router';
 import { LayoutService } from '../../core/services/layout.service';
-
+import { TimerService } from '../../core/services/timer.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-topbar',
   standalone:true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './topbar.html',
   styleUrl: './topbar.scss',
 })
@@ -20,7 +21,8 @@ export class Topbar {
   constructor(private authService: Auth,
       private elementRef : ElementRef,
       private router : Router,
-      public layoutService: LayoutService
+      public layoutService: LayoutService,
+      public timerService: TimerService 
   ) {
     this.user = this.authService.getUser();
   }

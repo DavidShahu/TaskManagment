@@ -1,0 +1,178 @@
+.task-detail {
+  .btn-back {
+    background: none;
+    border: none;
+    color: #667eea;
+    font-weight: 600;
+    padding: 0;
+    &:hover { color: #764ba2; }
+  }
+}
+
+.task-header {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+
+  .status-badge {
+    font-size: 0.8rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+  }
+}
+
+.detail-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  height: 100%;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #f0f0f0;
+
+  &:last-child { border-bottom: none; }
+
+  .detail-label {
+    color: #718096;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .detail-value {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #2d3748;
+  }
+}
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mini-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.time-stats {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 1rem;
+
+  .time-stat {
+    .time-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #2d3748;
+    }
+    .time-label {
+      font-size: 0.75rem;
+      color: #718096;
+    }
+  }
+}
+
+.log-time-form {
+  .form-control {
+    border-radius: 8px;
+    border: 1.5px solid #e2e8f0;
+    &:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+    }
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+}
+
+.time-log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.time-log-item {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+
+  .time-badge {
+    background: #eef2ff;
+    color: #667eea;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+  }
+}
+
+.timer-widget {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s ease;
+
+  &.active {
+    background: #f0fff4;
+    border-color: #68d391;
+    box-shadow: 0 0 0 3px rgba(104, 211, 145, 0.2);
+  }
+
+  &.other-task {
+    background: #fffbeb;
+    border-color: #f6c90e;
+  }
+
+  .timer-display {
+    font-size: 1.8rem;
+    font-weight: 700;
+    font-family: monospace;
+    color: #2d3748;
+    min-width: 120px;
+  }
+
+  .timer-btn {
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 0.5rem 1.25rem;
+    transition: all 0.2s;
+
+    &:hover { transform: translateY(-1px); }
+  }
+}
+
+.type-chip {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-weight: 600;
+}

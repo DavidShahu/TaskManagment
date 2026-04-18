@@ -116,20 +116,140 @@
         </div>
       </div>
 
-      <!-- Tasks Section (placeholder for now) -->
+      <!-- Tasks Section -->
       <div class="col-md-7">
         <div class="detail-card">
+
+          <!-- Header -->
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h6 class="fw-bold mb-0">📋 Tasks</h6>
-            <button class="btn btn-sm btn-outline-primary">
+            <h6 class="fw-bold mb-0">
+              📋 Tasks ({{ tasks.length }})
+            </h6>
+            <button class="btn btn-sm btn-primary"
+              (click)="openCreateTask()">
               + New Task
             </button>
           </div>
-          <div class="text-center py-5 text-muted">
-            <div style="font-size: 2rem" class="mb-2">📋</div>
-            <p class="mb-0">No tasks yet</p>
-            <small>Tasks will appear here once created</small>
+        
+          <!-- Filter Tabs -->
+          <div class="task-filter-tabs mb-3">
+            <button class="filter-btn"
+              [class.active]="statusFilter === 'all'"
+              (click)="statusFilter = 'all'">
+              All ({{ tasks.length }})
+            </button>
+            <button class="filter-btn"
+              [class.active]="statusFilter === 'open'"
+              (click)="statusFilter = 'open'">
+              Open ({{ openCount }})
+            </button>
+            <button class="filter-btn"
+              [class.active]="statusFilter === 'done'"
+              (click)="statusFilter = 'done'">
+              Done ({{ doneCount }})
+            </button>
           </div>
+        
+          <!-- Loading -->
+          @if (isLoadingTasks) {
+            <div class="d-flex justify-content-center py-3">
+              <div class="spinner-border spinner-border-sm text-primary"></div>
+            </div>
+          }
+        
+          <!-- Empty State -->
+          @if (!isLoadingTasks && filteredTasks.length === 0) {
+            <div class="text-center py-4 text-muted">
+              <div style="font-size: 2rem" class="mb-2">📋</div>
+              <p class="mb-1">No tasks yet</p>
+              <small>Create the first task for this project</small>
+            </div>
+          }
+        
+          <!-- Task List -->
+          @if (!isLoadingTasks && filteredTasks.length > 0) {
+            <div class="project-task-list">
+              @for (task of filteredTasks; track task.id) {
+                <div class="project-task-item"
+                  (click)="navigateToTask(task.id)">
+              
+                  <div class="d-flex align-items-start gap-2">
+                    <!-- Status Toggle -->
+                    @if (task.ownerId === currentUserId) {
+                      <button class="status-btn"
+                        (click)="toggleTaskStatus(task, $event)"
+                        [title]="task.status === 'Open'
+                          ? 'Mark as done' : 'Mark as open'">
+                        @if (task.status === 'Done') { ✅ } @else { ⬜ }
+                      </button>
+                    } @else {
+                      <!-- Just show status icon, no button -->
+                      <span style="font-size: 1rem">
+                        @if (task.status === 'Done') { ✅ } @else { ⬜ }
+                      </span>
+                    }
+                  
+                    <!-- Task Info -->
+                    <div class="flex-grow-1">
+                      <div class="d-flex justify-content-between align-items-start">
+                        <span class="task-name"
+                          [class.text-decoration-line-through]="task.status === 'Done'"
+                          [class.text-danger]="task.isOverdue">
+                            @if (task.taskTypeName) {
+                              <span class="me-1">{{ task.taskTypeName }}</span>
+                            }
+                          {{ task.title }}
+                        </span>
+                      
+                        <!-- Actions -->
+                        <div class="d-flex gap-1 task-actions">
+                          @if (isAdmin || !task.isAssignedByAdmin) {
+                            <button class="btn btn-sm btn-ghost"
+                              (click)="openEditTask(task, $event)"
+                              title="Edit">✏️</button>
+                            <button class="btn btn-sm btn-ghost text-danger"
+                              (click)="deleteTask(task, $event)"
+                              title="Delete">🗑️</button>
+                          }
+                        </div>
+                      </div>
+                    
+                      <!-- Meta -->
+                      <div class="d-flex gap-2 mt-1 flex-wrap">
+                        @if (isAdmin) {
+                          <span class="task-meta-chip">
+                            👤 {{ task.ownerName }}
+                          </span>
+                        }
+                        @if (task.dueDate) {
+                          <span class="task-meta-chip"
+                            [class.text-danger]="task.isOverdue">
+                            📅 {{ formatDate(task.dueDate) }}
+                          </span>
+                        }
+                        @if (task.estimatedHours) {
+                          <span class="task-meta-chip">
+                            ⏱️ {{ task.loggedHours }}h / {{ task.estimatedHours }}h
+                          </span>
+                        }
+                      </div>
+                    
+                      <!-- Progress bar -->
+                      @if (task.estimatedHours && task.estimatedHours > 0) {
+                        <div class="progress mt-1" style="height: 3px">
+                          <div class="progress-bar bg-primary"
+                            [style.width]="(task.progressPercentage ?? 0) + '%'">
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                
+                </div>
+              }
+            </div>
+          }
+        
         </div>
       </div>
 
@@ -137,3 +257,11 @@
   }
 
 </div>
+
+@if (showTaskForm) {
+  <app-task-form
+    [task]="selectedTask"
+    [preselectedProjectId]="project?.id"
+    (close)="onTaskFormClose($event)">
+  </app-task-form>
+}

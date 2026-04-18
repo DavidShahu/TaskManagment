@@ -1,0 +1,167 @@
+<div class="tasks-page">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="fw-bold mb-1">{{ pageTitle }}</h4>
+      <p class="text-muted mb-0">
+        {{ getOpenCount() }} open · {{ getDoneCount() }} done
+        @if (getOverdueCount() > 0) {
+          · <span class="text-danger">{{ getOverdueCount() }} overdue</span>
+        }
+      </p>
+    </div>
+    <button class="btn btn-primary" (click)="openCreate()">
+      + New Task
+    </button>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="filter-tabs mb-4">
+    <button class="filter-btn" [class.active]="statusFilter === 'all'"
+      (click)="setFilter('all')">
+      All ({{ tasks.length }})
+    </button>
+    <button class="filter-btn" [class.active]="statusFilter === 'open'"
+      (click)="setFilter('open')">
+      Open ({{ getOpenCount() }})
+    </button>
+    <button class="filter-btn" [class.active]="statusFilter === 'done'"
+      (click)="setFilter('done')">
+      Done ({{ getDoneCount() }})
+    </button>
+  </div>
+
+  <!-- Loading -->
+  @if (isLoading) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!isLoading && filteredTasks.length === 0) {
+    <div class="empty-state text-center py-5">
+      <div class="empty-icon mb-3">📋</div>
+      <h5 class="text-muted">No tasks found</h5>
+      <button class="btn btn-primary mt-2" (click)="openCreate()">
+        + Create your first task
+      </button>
+    </div>
+  }
+
+  <!-- Task List -->
+  @if (!isLoading && filteredTasks.length > 0) {
+    <div class="task-list">
+      @for (task of filteredTasks; track task.id) {
+        <div class="task-card" [class.done]="task.status === 'Done'"
+          [class.overdue]="task.isOverdue">
+
+          <div class="d-flex align-items-start gap-3">
+
+            <!-- Status Toggle -->
+            <!-- <button class="status-btn"
+              [class.checked]="task.status === 'Done'"
+              (click)="toggleStatus(task)"
+              [title]="task.status === 'Open' ? 'Mark as done' : 'Mark as open'">
+              @if (task.status === 'Done') { ✅ } @else { ⬜ }
+            </button> -->
+            @if (task.ownerId === currentUserId ) {
+              <button class="status-btn"
+                [class.checked]="task.status === 'Done'"
+                (click)="toggleStatus(task)"
+                [title]="task.status === 'Open' ? 'Mark as done' : 'Mark as open'">
+                @if (task.status === 'Done') { ✅ } @else { ⬜ }
+              </button>
+            } @else {
+              <span style="font-size: 1.2rem">
+                @if (task.status === 'Done') { ✅ } @else { ⬜ }
+              </span>
+            }
+            <!-- Task Info -->
+            <div class="flex-grow-1">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <a [routerLink]="['/tasks', task.id]"
+                    class="task-title"
+                    [class.text-decoration-line-through]="task.status === 'Done'">
+                      @if (task.taskTypeName) {
+                        <span class="type-badge me-1"
+                          [style.background]="task.taskTypeColor + '20'"
+                          [style.color]="task.taskTypeColor">
+                           {{ task.taskTypeName }}
+                        </span>
+                      }
+                    {{ task.title }}
+                  </a>
+                  @if (task.projectName) {
+                    <span class="project-badge ms-2">
+                      📁 {{ task.projectName }}
+                    </span>
+                  }
+                </div>
+
+                <!-- Actions -->
+                <div class="d-flex gap-2">
+                  @if (isAdmin || !task.isAssignedByAdmin) {
+                    <button class="btn btn-sm btn-ghost"
+                      (click)="openEdit(task)" title="Edit">
+                      ✏️
+                    </button>
+                    <button class="btn btn-sm btn-ghost text-danger"
+                      (click)="delete(task)" title="Delete">
+                      🗑️
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <!-- Meta info -->
+              <div class="task-meta d-flex align-items-center gap-3 mt-1">
+                @if (isAdmin && !isMyTasksView){
+                  <span class="text-muted small">
+                    👤 {{ task.ownerName }}
+                  </span>
+                }
+                @if (task.dueDate) {
+                  <span class="small"
+                    [class.text-danger]="task.isOverdue"
+                    [class.text-muted]="!task.isOverdue">
+                    📅 {{ formatDate(task.dueDate) }}
+                    @if (task.isOverdue) { (Overdue) }
+                  </span>
+                }
+                @if (task.estimatedHours) {
+                  <span class="text-muted small">
+                    ⏱️ {{ task.loggedHours }}h / {{ task.estimatedHours }}h
+                  </span>
+                }
+              </div>
+
+              <!-- Progress Bar -->
+              @if (task.estimatedHours && task.estimatedHours > 0) {
+                <div class="progress mt-2" style="height: 4px">
+                  <div class="progress-bar"
+                    [class.bg-success]="(task.progressPercentage ?? 0) >= 100"
+                    [class.bg-primary]="(task.progressPercentage ?? 0) < 100"
+                    [style.width]="(task.progressPercentage ?? 0) + '%'">
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Task Form Modal -->
+  @if (showForm) {
+    <app-task-form
+      [task]="selectedTask"
+      (close)="onFormClose($event)">
+    </app-task-form>
+  }
+
+</div>

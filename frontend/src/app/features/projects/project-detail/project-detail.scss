@@ -75,3 +75,96 @@
   border-radius: 6px;
   &:hover { background: #fff5f5; }
 }
+
+
+.task-filter-tabs {
+  display: flex;
+  gap: 0.35rem;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0;
+
+  .filter-btn {
+    background: none;
+    border: none;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+    color: #718096;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.2s;
+
+    &:hover { color: #667eea; }
+    &.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+      font-weight: 600;
+    }
+  }
+}
+
+.project-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.project-task-item {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #eef2ff;
+    border-color: #667eea;
+    transform: translateX(2px);
+  }
+
+  .status-btn {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .task-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #2d3748;
+  }
+
+  .task-meta-chip {
+    font-size: 0.75rem;
+    color: #718096;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 0.15rem 0.5rem;
+  }
+
+  .task-actions {
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  &:hover .task-actions {
+    opacity: 1;
+  }
+
+  .btn-ghost {
+    background: none;
+    border: none;
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    &:hover { background: white; }
+  }
+}

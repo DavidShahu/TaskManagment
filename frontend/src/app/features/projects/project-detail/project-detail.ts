@@ -7,15 +7,19 @@ import { FormsModule } from '@angular/forms';
 import { User, UserService } from '../../../core/services/user.service';
 import { SweetAlertService } from '../../../core/services/sweet-alert.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { TaskForm} from '../../tasks/task-form/task-form';
+import { TaskService, Task } from '../../../core/services/task.service';
 
 
 @Component({
   selector: 'app-project-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule,FormsModule],
+  imports: [CommonModule, RouterModule,FormsModule, TaskForm],
   templateUrl: './project-detail.html',
   styleUrl: './project-detail.scss',
 })
+
+
 export class ProjectDetail  implements OnInit {
   project: Project | null = null;
   availableUsers: User[] = [];
@@ -24,7 +28,12 @@ export class ProjectDetail  implements OnInit {
   errorMessage = '';
   showAddMember = false;
   selectedUserId = '';
-
+  isLoadingTasks = false; 
+  tasks: Task[] = [];
+  currentUserId = ''; 
+  showTaskForm = false;
+  selectedTask: Task | null = null;
+  statusFilter = 'all'; 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -32,11 +41,14 @@ export class ProjectDetail  implements OnInit {
     private userService: UserService,
     private authService: Auth,
     private toast: ToastService,
-    private swal: SweetAlertService
+    private swal: SweetAlertService,
+    private taskService: TaskService,
   ) {}
 
   ngOnInit(): void {
     this.isAdmin = this.authService.isAdmin();
+    this.currentUserId = this.authService.getUser()?.id ?? '';
+
     const id = this.route.snapshot.paramMap.get('id');
     if (id) this.loadProject(id);
   }
@@ -47,6 +59,7 @@ export class ProjectDetail  implements OnInit {
       next: (project) => {
         this.project = project;
         this.isLoading = false;
+        this.loadTasks();
         if (this.isAdmin) this.loadAvailableUsers();
       },
       error: (err) => {
@@ -114,4 +127,98 @@ export class ProjectDetail  implements OnInit {
       day: 'numeric'
     });
   }
+
+
+  loadTasks(): void {
+    if (!this.project) return;
+    this.isLoadingTasks = true;
+    this.taskService.getByProject(this.project.id).subscribe({
+      next: (tasks) => {
+        this.tasks = this.isAdmin
+        ? tasks
+        : tasks.filter(t => t.ownerId === this.currentUserId);
+        this.isLoadingTasks = false;
+      },
+      error: (err) => {
+        this.toast.error(err.message, 'Failed to load tasks');
+        this.isLoadingTasks = false;
+      }
+    });
+  }
+
+    get filteredTasks(): Task[] {
+    if (this.statusFilter === 'all') return this.tasks;
+    return this.tasks.filter(
+      t => t.status.toLowerCase() === this.statusFilter);
+  }
+
+  get openCount(): number {
+    return this.tasks.filter(t => t.status === 'Open').length;
+  }
+
+  get doneCount(): number {
+    return this.tasks.filter(t => t.status === 'Done').length;
+  }
+
+  openCreateTask(): void {
+    this.selectedTask = null;
+    this.showTaskForm = true;
+  }
+
+  openEditTask(task: Task, event: Event): void {
+    event.stopPropagation();
+    this.selectedTask = task;
+    this.showTaskForm = true;
+  }
+
+  onTaskFormClose(saved: boolean): void {
+    this.showTaskForm = false;
+    if (saved) {
+      this.toast.success(
+        this.selectedTask
+          ? 'Task updated successfully'
+          : 'Task created successfully');
+      this.loadTasks();
+    }
+  }
+
+  toggleTaskStatus(task: Task, event: Event): void {
+    event.stopPropagation();
+    const action$ = task.status === 'Open'
+      ? this.taskService.markAsDone(task.id)
+      : this.taskService.markAsOpen(task.id);
+
+    action$.subscribe({
+      next: () => {
+        this.toast.success(
+          `Task marked as ${task.status === 'Open' ? 'Done' : 'Open'}`);
+        this.loadTasks();
+      },
+      error: (err) => this.toast.error(err.message)
+    });
+  }
+
+  deleteTask(task: Task, event: Event): void {
+    event.stopPropagation();
+    this.swal.confirm(
+      'Delete Task',
+      `Are you sure you want to delete "${task.title}"?`,
+      'Delete'
+    ).then(result => {
+      if (result.isConfirmed) {
+        this.taskService.delete(task.id).subscribe({
+          next: () => {
+            this.toast.success('Task deleted');
+            this.loadTasks();
+          },
+          error: (err) => this.toast.error(err.message)
+        });
+      }
+    });
+  }
+
+    navigateToTask(taskId: string): void {
+    this.router.navigate(['/tasks', taskId]);
+  }
+
 }

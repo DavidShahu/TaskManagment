@@ -1,0 +1,117 @@
+.tasks-page {
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1.25rem;
+    font-weight: 600;
+  }
+
+  .empty-state .empty-icon { font-size: 3rem; }
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0;
+
+  .filter-btn {
+    background: none;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    color: #718096;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+
+    &:hover { color: #667eea; }
+
+    &.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+      font-weight: 600;
+    }
+  }
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.task-card {
+  background: white;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  transition: all 0.2s;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transform: translateY(-1px);
+  }
+
+  &.done {
+    opacity: 0.7;
+    background: #f8fafc;
+  }
+
+  &.overdue {
+    border-left: 3px solid #e53e3e;
+  }
+
+  .status-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: transform 0.2s;
+    &:hover { transform: scale(1.2); }
+  }
+
+  .task-title {
+    font-weight: 600;
+    color: #2d3748;
+    text-decoration: none;
+    font-size: 0.95rem;
+
+    &:hover { color: #667eea; }
+  }
+
+  .project-badge {
+    background: #eef2ff;
+    color: #667eea;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  .task-meta { flex-wrap: wrap; }
+
+  .btn-ghost {
+    background: none;
+    border: none;
+    padding: 0.25rem 0.4rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    &:hover { background: #f7fafc; }
+  }
+}
+
+.type-badge {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}

@@ -28,15 +28,14 @@ export class Sidebar {
 
   menuItems = [
     { label: 'Dashboard', icon: '🏠', route: '/dashboard' },
-    { label: 'My Tasks', icon: '✅', route: '/tasks' },
+    { label: 'My Tasks', icon: '✅', route: '/tasks/my' },
     { label: 'Projects', icon: '📁', route: '/projects' },
   ];
-
+  
   adminItems = [
-    { label: 'All Tasks', icon: '📋', route: '/admin/tasks' },
+    { label: 'All Tasks', icon: '📋', route: '/tasks' },
     { label: 'Users', icon: '👥', route: '/admin/users' },
   ];
-
   
 
   isAdmin(): boolean {

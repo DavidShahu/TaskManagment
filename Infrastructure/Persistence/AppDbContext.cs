@@ -19,11 +19,16 @@ namespace Infrastructure.Persistence
         public DbSet<User> Users => Set<User>();
         public DbSet<Project> Projects => Set<Project>();
         public DbSet<ProjectMember> ProjectMembers => Set<ProjectMember>();
+        public DbSet<TaskItem> Tasks => Set<TaskItem>();
+        public DbSet<TimeLog> TimeLogs => Set<TimeLog>();
+        public DbSet<ActiveTimer> ActiveTimers => Set<ActiveTimer>();
+        public DbSet<TaskType> TaskTypes => Set<TaskType>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(
                 typeof(AppDbContext).Assembly);
         }
+
     }
 }
