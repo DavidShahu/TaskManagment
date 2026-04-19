@@ -10,8 +10,10 @@ namespace Application.Users.Interfaces
     public interface IUserService
     {
         Task<List<UserResponse>> GetAllAsync(CancellationToken cancellationToken = default);
-        Task<UserResponse> GetByIdAsync(Guid id,  CancellationToken cancellationToken = default);
+        Task<UserResponse> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
         Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
         Task UpdateStatusAsync(Guid id, bool isActive, CancellationToken cancellationToken = default);
+
+        Task AdminResetPasswordAsync(Guid userId, string newPassword, CancellationToken cancellationToken = default);
     }
 }

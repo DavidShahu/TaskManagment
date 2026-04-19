@@ -69,7 +69,7 @@ public class TaskItemTests
         var task = TaskItem.Create(
             "Task", null, null, _userId, _userId);
 
-        task.MarkAsDone();
+        task.MarkAsDone(_userId);
 
         task.Status.Should().Be(TaskStatus.Done);
     }
@@ -80,7 +80,7 @@ public class TaskItemTests
         var task = TaskItem.Create(
             "Task", null, null, _userId, _userId);
 
-        task.MarkAsDone();
+        task.MarkAsDone(_userId);
         task.MarkAsOpen();
 
         task.Status.Should().Be(TaskStatus.Open);

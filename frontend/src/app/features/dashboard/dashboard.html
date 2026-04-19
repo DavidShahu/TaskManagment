@@ -1,55 +1,223 @@
 <div class="dashboard">
-  
-  <!-- Stats Cards -->
-  <div class="row g-4 mb-4">
-    <div class="col-md-3">
-      <div class="stat-card">
-        <div class="stat-icon">✅</div>
-        <div class="stat-info">
-          <div class="stat-value">0</div>
-          <div class="stat-label">My Tasks</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="stat-card">
-        <div class="stat-icon">🔄</div>
-        <div class="stat-info">
-          <div class="stat-value">0</div>
-          <div class="stat-label">In Progress</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="stat-card">
-        <div class="stat-icon">📁</div>
-        <div class="stat-info">
-          <div class="stat-value">0</div>
-          <div class="stat-label">Projects</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="stat-card">
-        <div class="stat-icon">⚠️</div>
-        <div class="stat-info">
-          <div class="stat-value">0</div>
-          <div class="stat-label">Due Soon</div>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Recent Tasks placeholder -->
-  <div class="card border-0 shadow-sm">
-    <div class="card-body p-4">
-      <h6 class="fw-bold mb-3">Recent Tasks</h6>
-      <div class="empty-state text-center py-5">
-        <div class="empty-icon mb-3">📋</div>
-        <p class="text-muted">No tasks yet. Create your first task!</p>
-        <button class="btn btn-primary">+ New Task</button>
-      </div>
+  @if (isLoading) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary"></div>
     </div>
-  </div>
+  }
+
+  @if (!isLoading) {
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+
+      <div class="col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon tasks">
+            <img src="assets/icons/tasks.svg" alt="" 
+              onerror="this.style.display='none'">
+            &#10003;
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ myTasksCount }}</div>
+            <div class="stat-label">
+              {{ isAdmin ? 'Total Tasks' : 'Open Tasks' }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon progress">&#8635;</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ inProgressCount }}</div>
+            <div class="stat-label">In Progress</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon projects">&#128193;</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ projectsCount }}</div>
+            <div class="stat-label">
+              {{ isAdmin ? 'Active Projects' : 'My Projects' }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="stat-card"
+          [class.danger]="overdueCount > 0">
+          <div class="stat-icon due">&#9888;</div>
+          <div class="stat-info">
+            <div class="stat-value"
+              [class.text-danger]="overdueCount > 0">
+              {{ overdueCount > 0 ? overdueCount : dueSoonCount }}
+            </div>
+            <div class="stat-label">
+              {{ overdueCount > 0 ? 'Overdue' : 'Due Soon' }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row g-4">
+
+      <!-- Recent Tasks -->
+      <div class="col-md-7">
+        <div class="dashboard-card">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-bold mb-0">Recent Tasks</h6>
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-primary"
+                (click)="showTaskForm = true">
+                + New Task
+              </button>
+              <a routerLink="/tasks"
+                class="btn btn-sm btn-outline-secondary">
+                View All
+              </a>
+            </div>
+          </div>
+
+          @if (recentTasks.length === 0) {
+            <div class="empty-state text-center py-4">
+              <p class="text-muted mb-2">No tasks yet</p>
+              <button class="btn btn-primary btn-sm"
+                (click)="showTaskForm = true">
+                Create your first task
+              </button>
+            </div>
+          }
+
+          @for (task of recentTasks; track task.id) {
+            <a [routerLink]="['/tasks', task.id]"
+              class="task-row d-flex align-items-center gap-3">
+
+              <span class="task-status-dot"
+                [class.done]="task.status === 'Done'"
+                [class.overdue]="task.isOverdue">
+              </span>
+
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between">
+                  <span class="task-name"
+                    [class.text-decoration-line-through]="
+                      task.status === 'Done'">
+                    @if (task.taskTypeIcon) {
+                      {{ task.taskTypeIcon }}
+                    }
+                    {{ task.title }}
+                  </span>
+                  <span class="task-date text-muted small">
+                    {{ formatDate(task.createdAt) }}
+                  </span>
+                </div>
+                <div class="d-flex gap-2 mt-1">
+                  @if (task.projectName) {
+                    <span class="mini-badge project">
+                      {{ task.projectName }}
+                    </span>
+                  }
+                  <span class="mini-badge"
+                    [class.open]="task.status === 'Open' && !task.isOverdue"
+                    [class.done]="task.status === 'Done'"
+                    [class.overdue]="task.isOverdue">
+                    {{ task.isOverdue ? 'Overdue' : task.status }}
+                  </span>
+                  @if (isAdmin) {
+                    <span class="mini-badge owner">
+                      {{ task.ownerName }}
+                    </span>
+                  }
+                </div>
+              </div>
+
+            </a>
+          }
+        </div>
+      </div>
+
+      <!-- Recent Projects -->
+      <div class="col-md-5">
+        <div class="dashboard-card">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-bold mb-0">Projects</h6>
+            <a routerLink="/projects"
+              class="btn btn-sm btn-outline-secondary">
+              View All
+            </a>
+          </div>
+
+          @if (recentProjects.length === 0) {
+            <div class="empty-state text-center py-4">
+              <p class="text-muted mb-0">No projects yet</p>
+            </div>
+          }
+
+          @for (project of recentProjects; track project.id) {
+            <a [routerLink]="['/projects', project.id]"
+              class="project-row">
+              <div class="d-flex justify-content-between
+                align-items-start mb-1">
+                <span class="fw-semibold">{{ project.name }}</span>
+                <span class="mini-badge open">Active</span>
+              </div>
+              <div class="d-flex justify-content-between
+                text-muted small">
+                <span>{{ project.members.length }} members</span>
+                <span>{{ formatDate(project.createdAt) }}</span>
+              </div>
+            </a>
+          }
+        </div>
+
+        <!-- Quick Stats for Admin -->
+        @if (isAdmin) {
+          <div class="dashboard-card mt-4">
+            <h6 class="fw-bold mb-3">Overview</h6>
+            <div class="overview-stat">
+              <span class="text-muted small">Total Tasks</span>
+              <span class="fw-bold">{{ tasks.length }}</span>
+            </div>
+            <div class="overview-stat">
+              <span class="text-muted small">Open</span>
+              <span class="fw-bold text-primary">
+                {{ tasks.filter(t => t.status === 'Open').length }}
+              </span>
+            </div>
+            <div class="overview-stat">
+              <span class="text-muted small">Done</span>
+              <span class="fw-bold text-success">
+                {{ tasks.filter(t => t.status === 'Done').length }}
+              </span>
+            </div>
+            <div class="overview-stat">
+              <span class="text-muted small">Overdue</span>
+              <span class="fw-bold text-danger">
+                {{ overdueCount }}
+              </span>
+            </div>
+          </div>
+        }
+
+      </div>
+
+    </div>
+  }
+
+  <!-- Task Form Modal -->
+  @if (showTaskForm) {
+    <app-task-form
+      [task]="null"
+      (close)="onTaskFormClose($event)">
+    </app-task-form>
+  }
 
 </div>

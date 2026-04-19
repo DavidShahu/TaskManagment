@@ -1,4 +1,5 @@
-﻿using Domain.Primitives;
+﻿using Domain.Events;
+using Domain.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,6 +67,12 @@ namespace Domain.Entities
         //activates a selected project
         public void Activate () => IsActive = true;
 
-
+        public void AddMember(Guid userId)
+        {
+            RaiseDomainEvent(new UserAddedToProject(
+                Id, Name, userId));
+        }
     }
+
+
 }

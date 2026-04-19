@@ -7,7 +7,7 @@ import { Auth } from '../../../core/auth/auth';
 import { ToastService } from '../../../core/services/toast.service';
 import { SweetAlertService } from '../../../core/services/sweet-alert.service';
 import { TaskForm } from '../task-form/task-form';
-import { TimerService } from '../../../core/services/timer.service';
+import { TimerService } from '../../../core/services/timer.service'; 
 
 
 @Component({
@@ -42,8 +42,14 @@ export class TaskDetail {
   ngOnInit(): void {
     this.isAdmin = this.authService.isAdmin();
     this.currentUserId = this.authService.getUser()?.id ?? '';
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) this.loadTask(id);
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.task = null;
+        this.isLoading = true;
+        this.loadTask(id);
+      }
+    });
   }
 
   loadTask(id: string): void {

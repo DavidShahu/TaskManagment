@@ -6,10 +6,12 @@ import { Auth } from '../../../core/auth/auth';
 import { ToastService } from '../../../core/services/toast.service';
 import { SweetAlertService } from '../../../core/services/sweet-alert.service';
 import { TaskForm } from '../task-form/task-form';
+import { User, UserService } from '../../../core/services/user.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-task-list',
-  imports: [CommonModule, RouterModule, TaskForm],
+  imports: [CommonModule, RouterModule, FormsModule, TaskForm],
   templateUrl: './task-list.html',
   styleUrl: './task-list.scss',
 })
@@ -23,12 +25,26 @@ export class TaskList implements OnInit {
   statusFilter: string = 'all';
   isMyTasksView = false;
   currentUserId = '';
+
+   
+  users: User[] = [];
+  dateFrom = '';
+  dateTo = '';
+  selectedUserId = '';
+  showFilters = false;
+
+  openCount = 0;
+  doneCount = 0;
+  overdueCount = 0;
+  
+  totalCount = 0;
   constructor(
     private taskService: TaskService,
     private authService: Auth,
     private toast: ToastService,
     private swal: SweetAlertService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private userService: UserService,
   ) {}
 
   ngOnInit(): void {
@@ -39,6 +55,10 @@ export class TaskList implements OnInit {
     this.isMyTasksView = this.route.snapshot.routeConfig?.path === 'tasks/my';
 
     this.loadTasks();
+    
+    if (this.isAdmin && !this.isMyTasksView) {
+      this.loadUsers();
+    }
   }
 
   get pageTitle(): string {
@@ -58,8 +78,8 @@ export class TaskList implements OnInit {
 
     tasks$.subscribe({
       next: (tasks) => {
-        this.tasks = tasks;
-        this.applyFilter();
+        this.tasks = tasks; 
+        this.applyFilters();
         this.isLoading = false;
       },
       error: (err) => {
@@ -69,17 +89,75 @@ export class TaskList implements OnInit {
     });
   }
 
-  applyFilter(): void {
-    this.filteredTasks = this.statusFilter === 'all'
-      ? this.tasks
-      : this.tasks.filter(t =>
-          t.status.toLowerCase() === this.statusFilter);
+
+  loadUsers(): void {
+    this.userService.getAll().subscribe({
+      next: (users) => this.users = users.filter(u => u.isActive)
+    });
+  }
+ 
+
+  applyFilters(): void {
+    let baseResult = [...this.tasks];
+  
+    if (this.dateFrom) {
+      const from = new Date(this.dateFrom);
+      from.setHours(0, 0, 0, 0);
+      baseResult = baseResult.filter(t =>
+        new Date(t.createdAt) >= from);
+    }
+  
+    if (this.dateTo) {
+      const to = new Date(this.dateTo);
+      to.setHours(23, 59, 59, 999);
+      baseResult = baseResult.filter(t =>
+        new Date(t.createdAt) <= to);
+    }
+  
+    if (this.isAdmin && this.selectedUserId) {
+      baseResult = baseResult.filter(t =>
+        t.ownerId === this.selectedUserId);
+    }
+  
+    // Counts from base result (before status filter)
+    this.openCount = baseResult
+      .filter(t => t.status === 'Open').length;
+    this.doneCount = baseResult
+      .filter(t => t.status === 'Done').length;
+    this.overdueCount = baseResult
+      .filter(t => t.isOverdue).length;
+    this.totalCount = baseResult.length; // ← total for this filter set
+  
+    // Apply status filter for display
+    if (this.statusFilter !== 'all') {
+      baseResult = baseResult.filter(t =>
+        t.status.toLowerCase() === this.statusFilter);
+    }
+  
+    this.filteredTasks = baseResult;
   }
 
-  setFilter(filter: string): void {
+  setStatusFilter(filter: string): void {
     this.statusFilter = filter;
-    this.applyFilter();
+    this.applyFilters();
   }
+
+  clearFilters(): void {
+    this.dateFrom = '';
+    this.dateTo = '';
+    this.selectedUserId = '';
+    this.statusFilter = 'all';
+    this.applyFilters();
+  }
+
+  get hasActiveFilters(): boolean {
+    return !!this.dateFrom ||
+      !!this.dateTo ||
+      !!this.selectedUserId ||
+      this.statusFilter !== 'all';
+  }
+ 
+
 
   openCreate(): void {
     this.selectedTask = null;
@@ -133,19 +211,7 @@ export class TaskList implements OnInit {
       }
     });
   }
-
-  getOpenCount(): number {
-    return this.tasks.filter(t => t.status === 'Open').length;
-  }
-
-  getDoneCount(): number {
-    return this.tasks.filter(t => t.status === 'Done').length;
-  }
-
-  getOverdueCount(): number {
-    return this.tasks.filter(t => t.isOverdue).length;
-  }
-
+ 
   formatDate(date: string): string {
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
@@ -153,4 +219,8 @@ export class TaskList implements OnInit {
       year: 'numeric'
     });
   }
+
+
+ 
+
 }

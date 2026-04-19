@@ -5,30 +5,107 @@
     <div>
       <h4 class="fw-bold mb-1">{{ pageTitle }}</h4>
       <p class="text-muted mb-0">
-        {{ getOpenCount() }} open · {{ getDoneCount() }} done
-        @if (getOverdueCount() > 0) {
-          · <span class="text-danger">{{ getOverdueCount() }} overdue</span>
+        {{ openCount }} open · {{ doneCount }} done
+        @if (overdueCount > 0) {
+          · <span class="text-danger">{{ overdueCount }} overdue</span>
         }
       </p>
     </div>
-    <button class="btn btn-primary" (click)="openCreate()">
-      + New Task
-    </button>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-secondary btn-sm"
+        (click)="showFilters = !showFilters">
+        Filters
+        @if (hasActiveFilters) {
+          <span class="filter-dot"></span>
+        }
+      </button>
+      <button class="btn btn-primary" (click)="openCreate()">
+        + New Task
+      </button>
+    </div>
   </div>
 
-  <!-- Filter Tabs -->
+  <!-- Filter Panel -->
+  @if (showFilters) {
+    <div class="filter-panel mb-4">
+      <div class="row g-3 align-items-end">
+
+        <!-- Date From -->
+        <div class="col-md-3">
+          <label class="form-label small fw-semibold">Created From</label>
+          <input type="date" class="form-control form-control-sm"
+            [(ngModel)]="dateFrom"
+            (ngModelChange)="applyFilters()"/>
+        </div>
+
+        <!-- Date To -->
+        <div class="col-md-3">
+          <label class="form-label small fw-semibold">Created To</label>
+          <input type="date" class="form-control form-control-sm"
+            [(ngModel)]="dateTo"
+            (ngModelChange)="applyFilters()"/>
+        </div>
+
+        <!-- User Filter (Admin only) -->
+        @if (isAdmin && !isMyTasksView) {
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold">Assigned To</label>
+            <select class="form-select form-select-sm"
+              [(ngModel)]="selectedUserId"
+              (ngModelChange)="applyFilters()">
+              <option value="">All Users</option>
+              @for (user of users; track user.id) {
+                <option [value]="user.id">
+                  {{ user.firstName }} {{ user.lastName }}
+                </option>
+              }
+            </select>
+          </div>
+        }
+
+        <!-- Clear Filters -->
+        <div class="col-md-3">
+          @if (hasActiveFilters) {
+            <button class="btn btn-sm btn-outline-danger w-100"
+              (click)="clearFilters()">
+              Clear Filters
+            </button>
+          }
+        </div>
+
+      </div>
+
+      <!-- Active Filter Summary -->
+      @if (hasActiveFilters) {
+        <div class="filter-summary mt-2">
+          Showing {{ filteredTasks.length }} of {{ totalCount  }} tasks
+          @if (dateFrom) { · From {{ formatDate(dateFrom) }} }
+          @if (dateTo) { · To {{ formatDate(dateTo) }} }
+          @if (selectedUserId) {
+            · {{ users.find(u => u.id === selectedUserId)?.firstName }}
+              {{ users.find(u => u.id === selectedUserId)?.lastName }}
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Status Filter Tabs -->
   <div class="filter-tabs mb-4">
-    <button class="filter-btn" [class.active]="statusFilter === 'all'"
-      (click)="setFilter('all')">
-      All ({{ tasks.length }})
+    <button class="filter-btn"
+      [class.active]="statusFilter === 'all'"
+      (click)="setStatusFilter('all')">
+      All ({{ totalCount }})
     </button>
-    <button class="filter-btn" [class.active]="statusFilter === 'open'"
-      (click)="setFilter('open')">
-      Open ({{ getOpenCount() }})
+    <button class="filter-btn"
+      [class.active]="statusFilter === 'open'"
+      (click)="setStatusFilter('open')">
+      Open ({{ openCount }})
     </button>
-    <button class="filter-btn" [class.active]="statusFilter === 'done'"
-      (click)="setFilter('done')">
-      Done ({{ getDoneCount() }})
+    <button class="filter-btn"
+      [class.active]="statusFilter === 'done'"
+      (click)="setStatusFilter('done')">
+      Done ({{ doneCount }})
     </button>
   </div>
 
@@ -43,10 +120,18 @@
   @if (!isLoading && filteredTasks.length === 0) {
     <div class="empty-state text-center py-5">
       <div class="empty-icon mb-3">📋</div>
-      <h5 class="text-muted">No tasks found</h5>
-      <button class="btn btn-primary mt-2" (click)="openCreate()">
-        + Create your first task
-      </button>
+      @if (hasActiveFilters) {
+        <h5 class="text-muted">No tasks match your filters</h5>
+        <button class="btn btn-outline-secondary btn-sm mt-2"
+          (click)="clearFilters()">
+          Clear Filters
+        </button>
+      } @else {
+        <h5 class="text-muted">No tasks found</h5>
+        <button class="btn btn-primary mt-2" (click)="openCreate()">
+          Create your first task
+        </button>
+      }
     </div>
   }
 
@@ -54,23 +139,18 @@
   @if (!isLoading && filteredTasks.length > 0) {
     <div class="task-list">
       @for (task of filteredTasks; track task.id) {
-        <div class="task-card" [class.done]="task.status === 'Done'"
+        <div class="task-card"
+          [class.done]="task.status === 'Done'"
           [class.overdue]="task.isOverdue">
 
           <div class="d-flex align-items-start gap-3">
 
             <!-- Status Toggle -->
-            <!-- <button class="status-btn"
-              [class.checked]="task.status === 'Done'"
-              (click)="toggleStatus(task)"
-              [title]="task.status === 'Open' ? 'Mark as done' : 'Mark as open'">
-              @if (task.status === 'Done') { ✅ } @else { ⬜ }
-            </button> -->
-            @if (task.ownerId === currentUserId ) {
+            @if (task.ownerId === currentUserId || isAdmin) {
               <button class="status-btn"
-                [class.checked]="task.status === 'Done'"
                 (click)="toggleStatus(task)"
-                [title]="task.status === 'Open' ? 'Mark as done' : 'Mark as open'">
+                [title]="task.status === 'Open'
+                  ? 'Mark as done' : 'Mark as open'">
                 @if (task.status === 'Done') { ✅ } @else { ⬜ }
               </button>
             } @else {
@@ -78,25 +158,23 @@
                 @if (task.status === 'Done') { ✅ } @else { ⬜ }
               </span>
             }
+
             <!-- Task Info -->
             <div class="flex-grow-1">
               <div class="d-flex justify-content-between align-items-start">
                 <div>
                   <a [routerLink]="['/tasks', task.id]"
                     class="task-title"
-                    [class.text-decoration-line-through]="task.status === 'Done'">
-                      @if (task.taskTypeName) {
-                        <span class="type-badge me-1"
-                          [style.background]="task.taskTypeColor + '20'"
-                          [style.color]="task.taskTypeColor">
-                           {{ task.taskTypeName }}
-                        </span>
-                      }
+                    [class.text-decoration-line-through]="
+                      task.status === 'Done'">
+                    @if (task.taskTypeIcon) {
+                      {{ task.taskTypeIcon }}
+                    }
                     {{ task.title }}
                   </a>
                   @if (task.projectName) {
                     <span class="project-badge ms-2">
-                      📁 {{ task.projectName }}
+                      {{ task.projectName }}
                     </span>
                   }
                 </div>
@@ -116,9 +194,9 @@
                 </div>
               </div>
 
-              <!-- Meta info -->
+              <!-- Meta -->
               <div class="task-meta d-flex align-items-center gap-3 mt-1">
-                @if (isAdmin && !isMyTasksView){
+                @if (isAdmin && !isMyTasksView) {
                   <span class="text-muted small">
                     👤 {{ task.ownerName }}
                   </span>
@@ -142,15 +220,17 @@
               @if (task.estimatedHours && task.estimatedHours > 0) {
                 <div class="progress mt-2" style="height: 4px">
                   <div class="progress-bar"
-                    [class.bg-success]="(task.progressPercentage ?? 0) >= 100"
-                    [class.bg-primary]="(task.progressPercentage ?? 0) < 100"
-                    [style.width]="(task.progressPercentage ?? 0) + '%'">
+                    [class.bg-success]="
+                      (task.progressPercentage ?? 0) >= 100"
+                    [class.bg-primary]="
+                      (task.progressPercentage ?? 0) < 100"
+                    [style.width]="
+                      (task.progressPercentage ?? 0) + '%'">
                   </div>
                 </div>
               }
             </div>
           </div>
-
         </div>
       }
     </div>

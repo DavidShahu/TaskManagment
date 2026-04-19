@@ -31,8 +31,7 @@ namespace TaskManagment.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create( CreateTaskTypeRequest request, CancellationToken cancellationToken)
         {
-            var type = await _taskTypeService
-                .CreateAsync(request, cancellationToken);
+            var type = await _taskTypeService.CreateAsync(request, cancellationToken);
             return Ok(type);
         }
 
@@ -41,8 +40,7 @@ namespace TaskManagment.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update( Guid id, UpdateTaskTypeRequest request, CancellationToken cancellationToken)
         {
-            var type = await _taskTypeService
-                .UpdateAsync(id, request, cancellationToken);
+            var type = await _taskTypeService.UpdateAsync(id, request, cancellationToken);
             return Ok(type);
         }
 

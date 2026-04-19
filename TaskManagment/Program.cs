@@ -1,10 +1,13 @@
 using Application.Auth.Interfaces;
 using Application.Common.Interfaces;
+using Application.Notifications.Interfaces;
 using Application.Projects.Interfaces.Projects;
+using Application.Tasks.DTOs;
 using Application.Tasks.Interfaces;
 using Application.TaskTypes.Interfaces;
 using Application.Users.Interfaces;
 using AspNetCoreRateLimit;
+using Infrastructure.Hubs;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
 using Infrastructure.Persistence.Seeders;
@@ -81,6 +84,7 @@ builder.Host.UseSerilog();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSignalR();
 
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -102,6 +106,9 @@ builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ITaskTypeRepository, TaskTypeRepository>();
 builder.Services.AddScoped<ITaskTypeService, TaskTypeService>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<INotificationAppService, NotificationAppService>();
 
 
 // JWT Authentication
@@ -132,6 +139,13 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(
+        typeof(CreateTaskRequest).Assembly); // Application
+    cfg.RegisterServicesFromAssembly(
+        typeof(TaskService).Assembly); // Infrastructure
+});
 // CORS for Angular
 builder.Services.AddCors(options =>
 {
@@ -140,10 +154,11 @@ builder.Services.AddCors(options =>
             .WithOrigins("http://localhost:4200", "https://localhost:4200")
             .AllowAnyMethod()
             .AllowAnyHeader()
-            .AllowCredentials());
+            .AllowCredentials() );
 });
 
 var app = builder.Build();
+app.MapHub<NotificationHub>("/hubs/notifications");
 
 
 // Apply migrations + seed on startup
@@ -170,6 +185,9 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+
+
 
 app.UseHttpsRedirection();
 

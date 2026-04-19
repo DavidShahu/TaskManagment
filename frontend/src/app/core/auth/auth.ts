@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { ErrorHandlerService } from '../services/error-handler.service';
 import { TimerService } from '../services/timer.service';
+import { NotificationService } from '../services/notification.service';
 
 
 export interface LoginRequest {
@@ -37,7 +38,7 @@ export class Auth {
 
   private apiUrl = 'https://localhost:7145/api';
 
-  constructor(private http: HttpClient, private errorHandler : ErrorHandlerService, private timerService: TimerService) {}
+  constructor(private http: HttpClient, private errorHandler : ErrorHandlerService, private timerService: TimerService, private notificationService : NotificationService) {}
 
   // login(request: LoginRequest): Observable<AuthResponse> {
   //   return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, request)
@@ -54,6 +55,10 @@ export class Auth {
       .pipe(
         tap(response => {
           this.saveToken(response);
+          
+          
+          this.notificationService.initialize(response.token);
+
           // restore timer for this specific user after login
           this.timerService.restoreTimer();
         }),
@@ -70,6 +75,7 @@ export class Auth {
   }
 
   logout(): void {
+    this.notificationService.destroy();
     this.timerService.clearLocalState();
     localStorage.removeItem('token');
     localStorage.removeItem('user');

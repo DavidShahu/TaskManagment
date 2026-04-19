@@ -13,13 +13,11 @@ export interface TaskType {
 
 export interface CreateTaskTypeRequest {
   name: string;
-  icon: string;
   color: string;
 }
 
 export interface UpdateTaskTypeRequest {
   name: string;
-  icon: string;
   color: string;
 }
 

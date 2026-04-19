@@ -142,6 +142,9 @@ namespace Infrastructure.Services
             };
 
             await _projectRepository.AddMemberAsync(member, cancellationToken);
+
+            //raise domain event for addind a member to the project
+            project.AddMember(userId);
             await _projectRepository.SaveChangesAsync(cancellationToken);
         }
 

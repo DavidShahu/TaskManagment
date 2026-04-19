@@ -45,4 +45,12 @@ export class UserService {
       .pipe(catchError((err: HttpErrorResponse) =>
         this.errorHandler.handle(err)));
   }
+
+  resetPassword(id: string, newPassword: string): Observable<void> {
+    return this.http.post<void>(
+      `${this.apiUrl}/${id}/reset-password`,
+      { newPassword })
+      .pipe(catchError((err: HttpErrorResponse) =>
+        this.errorHandler.handle(err)));
+  }
 }

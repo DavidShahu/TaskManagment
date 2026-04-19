@@ -36,7 +36,7 @@ namespace Application.Tasks.DTOs
         public string? TaskTypeColor { get; set; }
 
         public bool IsOverdue => DueDate.HasValue &&
-            DueDate.Value < DateTime.Now &&
+            DueDate.Value.Date < DateTime.Now.Date &&
             Status == "Open";
     }
 

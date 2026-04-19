@@ -1,11 +1,13 @@
-﻿using Domain.Primitives;
+﻿using Domain.Enums;
+using Domain.Events;
+using Domain.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Domain.Enums;
- 
+using TaskStatus = Domain.Enums.TaskStatus;
+
 namespace Domain.Entities
 {
 
@@ -72,7 +74,7 @@ namespace Domain.Entities
                 throw new ArgumentException(
                     "Title cannot exceed 200 characters");
 
-            if (dueDate.HasValue && dueDate.Value <= DateTime.Now)
+            if (dueDate.HasValue && dueDate.Value.Date <  DateTime.Now.Date)
                 throw new ArgumentException(
                     "Due date must be in the future");
 
@@ -80,7 +82,7 @@ namespace Domain.Entities
                 throw new ArgumentException(
                     "Estimated hours must be greater than 0");
 
-            return new TaskItem(
+            var task = new TaskItem(
                 Guid.NewGuid(),
                 title,
                 description,
@@ -90,7 +92,19 @@ namespace Domain.Entities
                 projectId,
                 estimatedHours,
                 taskTypeId);
+
+            if (ownerId != createdByUserId)
+            {
+                task.RaiseDomainEvent(new TaskAssignedToUser(
+                    task.Id,
+                    title,
+                    ownerId,
+                    createdByUserId));
+            }
+
+            return task;
         }
+      
 
         public void Update(
             string title,
@@ -106,7 +120,7 @@ namespace Domain.Entities
                 throw new ArgumentException(
                     "Title cannot exceed 200 characters");
 
-            if (dueDate.HasValue && dueDate.Value <= DateTime.Now)
+            if (dueDate.HasValue && dueDate.Value.Date < DateTime.Now.Date)
                 throw new ArgumentException(
                     "Due date must be in the future");
 
@@ -139,7 +153,22 @@ namespace Domain.Entities
             ? Math.Min(100, (LoggedHours / EstimatedHours.Value) * 100)
             : null;
 
-        public void MarkAsDone() => Status = Enums.TaskStatus.Done;
+        //public void MarkAsDone() => Status = Enums.TaskStatus.Done;
+
+        public void MarkAsDone(Guid completedByUserId)
+        {
+            Status = TaskStatus.Done;
+
+            // Only notify if completed by someone other than creator
+            if (completedByUserId != CreatedByUserId)
+            {
+                RaiseDomainEvent(new TaskMarkedAsDone(
+                    Id,
+                    Title,
+                    completedByUserId,
+                    CreatedByUserId));
+            }
+        }
         public void MarkAsOpen() => Status = Enums.TaskStatus.Open;
     }
 }

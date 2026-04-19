@@ -1,4 +1,5 @@
-﻿using Application.Users.Interfaces;
+﻿using Application.Users.DTOs;
+using Application.Users.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagment.Extencions;
@@ -68,6 +69,22 @@ namespace TaskManagment.Controllers
             await _userService.UpdateStatusAsync(id, request.IsActive, cancellationToken);
             return NoContent();
         }
+
+        // POST api/users/{id}/reset-password — Admin only
+        [HttpPost("{id:guid}/reset-password")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ResetPassword(Guid id, [FromBody] AdminResetPasswordRequest request, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation(
+                "Admin {AdminId} resetting password for user {UserId}",
+                User.GetUserId(), id);
+
+            await _userService.AdminResetPasswordAsync(
+                id, request.NewPassword, cancellationToken);
+
+            return Ok(new { message = "Password reset successfully" });
+        }
+
     }
 }
 

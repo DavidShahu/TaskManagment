@@ -194,7 +194,8 @@ namespace Infrastructure.Services
                 throw new UnauthorizedAccessException(
                     "You can only update your own tasks");
 
-            task.MarkAsDone();
+            task.MarkAsDone(requestingUserId);
+
             await _taskRepository.SaveChangesAsync(cancellationToken);
         }
 

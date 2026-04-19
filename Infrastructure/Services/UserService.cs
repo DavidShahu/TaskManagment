@@ -73,6 +73,21 @@ namespace Infrastructure.Services
             await _userRepository.SaveChangesAsync(cancellationToken);
         }
 
+        public async Task AdminResetPasswordAsync(Guid userId,  string newPassword, CancellationToken cancellationToken = default)
+        {
+            if (newPassword.Length < 8)
+                throw new ArgumentException(
+                    "Password must be at least 8 characters");
 
+            var user = await _userRepository
+                .GetByIdAsync(userId, cancellationToken);
+
+            if (user is null)
+                throw new KeyNotFoundException("User not found");
+
+            var hash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            user.UpdatePassword(hash);
+            await _userRepository.SaveChangesAsync();
+        }
     }
 }

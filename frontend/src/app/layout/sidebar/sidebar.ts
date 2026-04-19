@@ -35,6 +35,7 @@ export class Sidebar {
   adminItems = [
     { label: 'All Tasks', icon: '📋', route: '/tasks' },
     { label: 'Users', icon: '👥', route: '/admin/users' },
+    { label: 'Task Types', icon: '🏷️', route: '/admin/task-types' },
   ];
   
 

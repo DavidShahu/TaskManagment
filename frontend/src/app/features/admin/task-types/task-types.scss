@@ -1,0 +1,134 @@
+.task-types-page {
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+}
+
+.type-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: all 0.2s;
+
+  &:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  &.inactive { opacity: 0.6; background: #f8fafc; }
+
+  .type-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .color-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+}
+
+.status-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+  display: inline-block;
+
+  &.active { background: #f0fff4; color: #38a169; }
+  &.inactive { background: #f7fafc; color: #a0aec0; }
+}
+
+// Modal
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 200;
+}
+
+.modal-container {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 201;
+  padding: 1rem;
+}
+
+.modal-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+
+  .btn-close-custom {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    color: #718096;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    &:hover { background: #f7fafc; }
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+}
+
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.4rem;
+
+  .icon-btn {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.4rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    aspect-ratio: 1;
+
+    &:hover { border-color: #667eea; background: #eef2ff; }
+    &.selected {
+      border-color: #667eea;
+      background: #eef2ff;
+      transform: scale(1.1);
+    }
+  }
+}
+
+.color-picker {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 8px;
+  padding: 0;
+  cursor: pointer;
+}
+
+.type-preview {
+  padding: 0.4rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}

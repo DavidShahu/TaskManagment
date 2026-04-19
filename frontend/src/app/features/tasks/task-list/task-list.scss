@@ -115,3 +115,45 @@
   align-items: center;
   gap: 0.25rem;
 }
+
+
+.filter-panel {
+  background: white;
+  border-radius: 10px;
+  padding: 1.25rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+
+  .form-control, .form-select {
+    border-radius: 8px;
+    border: 1.5px solid #e2e8f0;
+    font-size: 0.875rem;
+
+    &:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+    }
+  }
+}
+
+.filter-summary {
+  font-size: 0.8rem;
+  color: #718096;
+  padding-top: 0.5rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.btn-outline-secondary {
+  position: relative;
+
+  .filter-dot {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #667eea;
+    border: 2px solid white;
+  }
+}

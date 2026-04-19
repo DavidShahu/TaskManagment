@@ -75,5 +75,14 @@ namespace Domain.Entities
         public void Deactivate() => IsActive = false;
         //activat user if is inactive
         public void Activate() => IsActive = true;
+
+        //password reset by admin
+        public void UpdatePassword(string newPasswordHash)
+        {
+            if (string.IsNullOrWhiteSpace(newPasswordHash))
+                throw new ArgumentException("Password hash is required");
+
+            PasswordHash = newPasswordHash;
+        }
     }
 }

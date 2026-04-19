@@ -1,0 +1,128 @@
+<div class="task-types-page">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="fw-bold mb-1">Task Types</h4>
+      <p class="text-muted mb-0">
+        {{ taskTypes.length }} types · 
+        {{ taskTypes.filter(t => t.isActive).length }} active
+      </p>
+    </div>
+    <button class="btn btn-primary" (click)="openCreate()">
+      + New Type
+    </button>
+  </div>
+
+  <!-- Loading -->
+  @if (isLoading) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  }
+
+  <!-- Task Types Grid -->
+  @if (!isLoading) {
+    <div class="row g-3">
+      @for (type of taskTypes; track type.id) {
+        <div class="col-md-4">
+          <div class="type-card" [class.inactive]="!type.isActive">
+
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="type-icon"
+                [style.background]="type.color + '20'"
+                [style.color]="type.color">
+                {{ type.icon }}
+              </div>
+              <div class="flex-grow-1">
+                <div class="fw-semibold">{{ type.name }}</div>
+                <span class="status-badge"
+                  [class.active]="type.isActive"
+                  [class.inactive]="!type.isActive">
+                  {{ type.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </div>
+              <div class="color-dot"
+                [style.background]="type.color">
+              </div>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-outline-secondary flex-grow-1"
+                (click)="openEdit(type)">
+                Edit
+              </button>
+              <button class="btn btn-sm flex-grow-1"
+                [class.btn-outline-danger]="type.isActive"
+                [class.btn-outline-success]="!type.isActive"
+                (click)="toggleStatus(type)">
+                {{ type.isActive ? 'Deactivate' : 'Activate' }}
+              </button>
+            </div>
+
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Form Modal -->
+  @if (showForm) {
+    <div class="modal-backdrop" (click)="showForm = false"></div>
+    <div class="modal-container">
+      <div class="modal-card">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="fw-bold mb-0">
+            {{ isEdit ? 'Edit Task Type' : 'New Task Type' }}
+          </h5>
+          <button class="btn-close-custom"
+            (click)="showForm = false">✕</button>
+        </div>
+
+        <form (ngSubmit)="onSubmit()" #typeForm="ngForm">
+
+          <!-- Name -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Name *</label>
+            <input type="text" class="form-control"
+              placeholder="e.g. Testing"
+              [(ngModel)]="form.name"
+              name="name"
+              required
+              maxlength="50"/>
+          </div>
+
+     
+          <!-- Color -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Color *</label>
+            <div class="d-flex align-items-center gap-3">
+              <input type="color" class="color-picker"
+                [(ngModel)]="form.color"
+                name="color"/>
+              <div class="type-preview"
+                [style.background]="form.color + '20'"
+                [style.color]="form.color">
+                {{ form.name || 'Preview' }}
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2 justify-content-end">
+            <button type="button" class="btn btn-light"
+              (click)="showForm = false">
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary"
+              [disabled]="typeForm.invalid">
+              {{ isEdit ? 'Save Changes' : 'Create Type' }}
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  }
+
+</div>

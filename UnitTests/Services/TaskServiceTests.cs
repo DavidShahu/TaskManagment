@@ -335,7 +335,7 @@ public class TaskServiceTests
     public async Task MarkAsOpen_AfterDone_ShouldSucceed()
     {
         var task = CreateTask(_userId, _userId);
-        task.MarkAsDone();
+        task.MarkAsDone(_userId);
 
         _taskRepoMock.Setup(r =>
             r.GetByIdAsync(It.IsAny<Guid>(), default))

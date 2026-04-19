@@ -15,4 +15,8 @@
     <Folder Include="Projects\Interfaces\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="13.0.0" />
+  </ItemGroup>
+
 </Project>

@@ -33,6 +33,16 @@ export const routes: Routes = [
         loadComponent: () => import('./features/tasks/task-detail/task-detail')
           .then(m => m.TaskDetail)
       },
+      {
+        path: 'admin/users',
+        loadComponent: () => import('./features/admin/users/users')
+          .then(m => m.Users)
+      },
+      {
+        path: 'admin/task-types',
+        loadComponent: () => import('./features/admin/task-types/task-types')
+          .then(m => m.TaskTypes)
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
    }
