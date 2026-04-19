@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError } from 'rxjs';
 import { ErrorHandlerService } from './error-handler.service';
+import { environment } from '../../../environments/environment';
 
 export interface User {
   id: string;
@@ -15,7 +16,9 @@ export interface User {
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private apiUrl = 'https://localhost:7145/api/users';
+  
+  private apiUrl = `${environment.apiUrl}/api/users`;
+  
 
   constructor(
     private http: HttpClient,

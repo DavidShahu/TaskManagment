@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError } from 'rxjs';
 import { ErrorHandlerService } from './error-handler.service';
+import { environment } from '../../../environments/environment';
 
 export interface TimeLog {
   id: string;
@@ -62,7 +63,9 @@ export interface LogTimeRequest {
 
 @Injectable({ providedIn: 'root' })
 export class TaskService {
-  private apiUrl = 'https://localhost:7145/api/tasks';
+  
+  private apiUrl = `${environment.apiUrl}/api/tasks`;
+  
 
   constructor(
     private http: HttpClient,

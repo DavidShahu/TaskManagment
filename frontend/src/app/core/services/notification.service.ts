@@ -5,10 +5,12 @@ import { ErrorHandlerService } from './error-handler.service';
 import { SignalRService, NotificationMessage } from './signalr.service';
 import { ToastService } from './toast.service';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
-  private apiUrl = 'https://localhost:7145/api/notifications';
+  //private apiUrl = 'https://localhost:7145/api/notifications';
+  private apiUrl = `${environment.apiUrl}/api/notifications`;
 
   notifications = signal<NotificationMessage[]>([]);
   unreadCount = signal(0);

@@ -499,6 +499,9 @@ obj/
 
 # Secrets
 appsettings.Development.json
+**/project.assets.json
+**/project.nuget.cache
+**/*.user
 
 # Logs
 logs/
@@ -507,3 +510,12 @@ logs/
 # VS files
 .vs/
 *.user 
+
+# Angular cache
+frontend/.angular/
+
+# Environment files with secrets (keep the template ones)
+frontend/src/environments/environment.development.ts
+
+# Docker
+.dockerignore

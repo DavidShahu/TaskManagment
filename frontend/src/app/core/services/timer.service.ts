@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 export interface TimerResponse {
   taskId: string;
@@ -11,7 +12,9 @@ export interface TimerResponse {
 
 @Injectable({ providedIn: 'root' })
 export class TimerService {
-  private apiUrl = 'https://localhost:7145/api/tasks';
+
+  private apiUrl = `${environment.apiUrl}/api/tasks`;
+
   private intervalId: any = null;
 
   isRunning = signal(false);

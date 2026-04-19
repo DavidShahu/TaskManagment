@@ -1,0 +1,52 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: taskflow-db
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "TaskFlow@2024!"
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqldata:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'TaskFlow@2024!' -Q 'SELECT 1' -No -C || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: taskflow-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ASPNETCORE_URLS: "http://+:8080"
+      ConnectionStrings__DefaultConnection: "Server=db;Database=TaskManagement;User Id=sa;Password=TaskFlow@2024!;TrustServerCertificate=True;"
+      JwtSettings__SecretKey: "asdasdqwaedw1231231wqeq123asdasdqweqwe"
+      JwtSettings__Issuer: "TaskManagement"
+      JwtSettings__Audience: "TaskManagement"
+      JwtSettings__ExpiryHours: "24"
+      FrontendUrl: "http://localhost:4500"
+    # No ports exposed — only accessible internally via nginx
+    expose:
+      - "8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: taskflow-frontend
+    ports:
+      - "4500:80"  # Single entry point for everything
+    depends_on:
+      - api
+
+volumes:
+  sqldata:

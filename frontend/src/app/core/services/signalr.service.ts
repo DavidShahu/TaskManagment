@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { BehaviorSubject } from 'rxjs';
 import { Subject } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface NotificationMessage {
   id: string;
@@ -16,7 +17,10 @@ export interface NotificationMessage {
 @Injectable({ providedIn: 'root' })
 export class SignalRService {
   private hubConnection: signalR.HubConnection | null = null;
-  private apiUrl = 'https://localhost:7145';
+   
+  
+    private apiUrl = `${environment.apiUrl}`;
+  
 
     notification$ = new Subject<NotificationMessage>();
  

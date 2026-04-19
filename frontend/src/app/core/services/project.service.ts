@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { catchError, Observable } from "rxjs";
 import { ErrorHandlerService } from './error-handler.service';
+import { environment } from "../../../environments/environment";
 
 
 export interface ProjectMember{
@@ -35,8 +36,10 @@ export interface UpdateProjectRequest{
 
 @Injectable({providedIn: 'root'})
 export class ProjectService{
-    private apiUrl = 'https://localhost:7145/api/projects';
-    constructor(private http: HttpClient, private errorHandler: ErrorHandlerService) {}
+
+  private apiUrl = `${environment.apiUrl}/api/projects`;
+
+  constructor(private http: HttpClient, private errorHandler: ErrorHandlerService) {}
 
   getAll(): Observable<Project[]> {
     return this.http.get<Project[]>(this.apiUrl)

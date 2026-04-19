@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError } from 'rxjs';
 import { ErrorHandlerService } from './error-handler.service';
+import { environment } from '../../../environments/environment';
 
 export interface TaskType {
   id: string;
@@ -23,7 +24,9 @@ export interface UpdateTaskTypeRequest {
 
 @Injectable({ providedIn: 'root' })
 export class TaskTypeService {
-  private apiUrl = 'https://localhost:7145/api/tasktypes';
+  
+  private apiUrl = `${environment.apiUrl}/api/tasktypes`;
+  
 
   constructor(
     private http: HttpClient,

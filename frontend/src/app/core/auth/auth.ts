@@ -5,6 +5,7 @@ import { catchError, tap } from 'rxjs/operators';
 import { ErrorHandlerService } from '../services/error-handler.service';
 import { TimerService } from '../services/timer.service';
 import { NotificationService } from '../services/notification.service';
+import { environment } from '../../../environments/environment';
 
 
 export interface LoginRequest {
@@ -36,7 +37,8 @@ export interface AuthResponse {
 export class Auth {
 
 
-  private apiUrl = 'https://localhost:7145/api';
+  private apiUrl = `${environment.apiUrl}/api`;
+
 
   constructor(private http: HttpClient, private errorHandler : ErrorHandlerService, private timerService: TimerService, private notificationService : NotificationService) {}
 
@@ -50,6 +52,7 @@ export class Auth {
 
 
   login(request: LoginRequest): Observable<AuthResponse> {
+    debugger
     return this.http.post<AuthResponse>(
       `${this.apiUrl}/auth/login`, request)
       .pipe(

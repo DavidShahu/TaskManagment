@@ -118,7 +118,7 @@ Swagger UI is available at `https://localhost:7145/swagger`.
 
 ### 5 — Frontend configuration
 
-The API URL is configured in `frontend/src/app/core/auth/auth.ts` and the service files under `frontend/src/app/core/services/`. Make sure the port matches your backend.
+The API URL is configured in `frontend/src/environments/environment.ts`. Make sure the port matches your backend.
 
 ### 6 — Run the frontend
 
@@ -370,6 +370,35 @@ GitHub Actions runs automatically on every push to main:
 
 ---
 
+
+## Docker
+
+Run the entire stack with one command:
+
+```bash
+docker-compose up --build
+```
+
+Services available at:
+- Frontend: http://localhost:4500
+- Swagger: http://localhost:4500/swagger/index.html
+
+Default credentials:
+- Email: admin@taskmanagement.com
+- Password: Admin@1234
+
+To stop:
+```bash
+docker-compose down
+```
+
+To stop and remove database:
+```bash
+docker-compose down -v
+```
+
+
+
 ## Roadmap
 
 - [x] JWT Authentication
@@ -383,7 +412,7 @@ GitHub Actions runs automatically on every push to main:
 - [x] Clean Architecture
 - [x] Unit tests
 - [x] CI/CD pipeline
-- [ ] Docker support 
+- [x] Docker support 
 
 ---
 
