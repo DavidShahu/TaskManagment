@@ -85,6 +85,17 @@ namespace Infrastructure.Services
             if (user is null)
                 throw new KeyNotFoundException("User not found");
 
+            // Check for at least one number
+            if (!newPassword.Any(char.IsDigit))
+                throw new ArgumentException(
+                    "Password must contain at least one number");
+
+            // Check for at least one special character
+            var specialChars = "!@#$%^&*";
+            if (!newPassword.Any(c => specialChars.Contains(c)))
+                throw new ArgumentException(
+                    "Password must contain at least one special character (!@#$%^&*)");
+
             var hash = BCrypt.Net.BCrypt.HashPassword(newPassword);
             user.UpdatePassword(hash);
             await _userRepository.SaveChangesAsync();

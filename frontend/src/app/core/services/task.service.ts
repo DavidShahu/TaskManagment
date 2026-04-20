@@ -36,6 +36,7 @@ export interface Task {
   taskTypeName?: string;
   taskTypeIcon?: string;
   taskTypeColor?: string;
+  createdByName: string;
 }
 
 export interface CreateTaskRequest {

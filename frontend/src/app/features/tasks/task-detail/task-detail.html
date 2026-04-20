@@ -81,7 +81,19 @@
               </div>
             </span>
           </div>
-          
+          @if (task.isAssignedByAdmin) {
+            <div class="detail-item">
+              <span class="detail-label">Created By</span>
+              <span class="detail-value">
+                <div class="user-chip">
+                  <div class="mini-avatar">
+                    {{ task.createdByName.charAt(0) }}
+                  </div>
+                  {{ task.createdByName }}
+                </div>
+              </span>
+            </div>
+          }
           <div class="detail-item">
             <span class="detail-label">Type</span>
             <span class="detail-value">

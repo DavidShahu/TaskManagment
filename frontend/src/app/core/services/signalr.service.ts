@@ -26,7 +26,7 @@ export class SignalRService {
  
   startConnection(token: string): void {
     if (this.hubConnection) this.stopConnection();
-
+  
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(`${this.apiUrl}/hubs/notifications`, {
         accessTokenFactory: () => token
@@ -34,12 +34,15 @@ export class SignalRService {
       .withAutomaticReconnect()
       .configureLogging(signalR.LogLevel.Warning)
       .build();
-
+    
+    // Remove any existing handlers before adding new one
+    this.hubConnection.off('ReceiveNotification');
+    
     this.hubConnection.on('ReceiveNotification',
       (notification: NotificationMessage) => {
         this.notification$.next(notification);
       });
-
+    
     this.hubConnection
       .start()
       .then(() => console.log('SignalR connected'))

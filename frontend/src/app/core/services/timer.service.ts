@@ -30,7 +30,11 @@ restoreTimer(): void {
     this.http.get<TimerResponse | null>(`${this.apiUrl}/timer`)
       .subscribe({
         next: (timer) => {
-          if (!timer) return;
+          if (!timer){
+
+            this.clearLocalState();
+            return;
+          } 
 
           const elapsed = Math.floor(
             (Date.now() - new Date(timer.startedAt).getTime()) / 1000);
@@ -87,7 +91,16 @@ restoreTimer(): void {
             this.activeTaskTitle.set(null);
             resolve(result.hours);
           },
-          error: () => resolve(0)
+          error: () => {
+            // Task was deleted — clear timer state anyway
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+            this.isRunning.set(false);
+            this.elapsedSeconds.set(0);
+            this.activeTaskId.set(null);
+            this.activeTaskTitle.set(null);
+            resolve(0);
+          }
         });
     });
   }

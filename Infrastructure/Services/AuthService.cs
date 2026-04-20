@@ -37,6 +37,15 @@ namespace Infrastructure.Services
                 throw new ArgumentException(
                     "Password must be at least 8 characters");
 
+            // Check for at least one number
+            if (!request.Password.Any(char.IsDigit))
+                throw new ArgumentException( "Password must contain at least one number");
+
+            // Check for at least one special character
+            var specialChars = "!@#$%^&*";
+            if (!request.Password.Any(c => specialChars.Contains(c)))
+                throw new ArgumentException( "Password must contain at least one special character (!@#$%^&*)");
+
             // hash password so we dont save a plain string
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
 

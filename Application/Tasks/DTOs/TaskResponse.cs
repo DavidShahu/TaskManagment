@@ -38,6 +38,9 @@ namespace Application.Tasks.DTOs
         public bool IsOverdue => DueDate.HasValue &&
             DueDate.Value.Date < DateTime.Now.Date &&
             Status == "Open";
+
+        public string CreatedByName { get; set; } = string.Empty;
+
     }
 
     public class TimeLogResponse

@@ -25,6 +25,7 @@ namespace Infrastructure.Persistence.Repositories
         {
             List<TaskItem> tasks = await _context.Tasks
                 .Include(t => t.Owner)
+                .Include(t => t.CreatedBy)
                 .Include(t => t.Project)
                 .Include(t => t.TimeLogs).ThenInclude(tl => tl.User)
                 .Include(t => t.TaskType)
@@ -38,6 +39,7 @@ namespace Infrastructure.Persistence.Repositories
         {
             List<TaskItem> tasks = await _context.Tasks
                 .Include(t => t.Owner)
+                .Include(t => t.CreatedBy)
                 .Include(t => t.Project)
                 .Include(t => t.TimeLogs).ThenInclude(tl => tl.User)
                 .Include(t => t.TaskType)
@@ -51,6 +53,7 @@ namespace Infrastructure.Persistence.Repositories
         {
             List<TaskItem> tasks = await _context.Tasks
                 .Include(t => t.Owner)
+                .Include(t => t.CreatedBy)
                 .Include(t => t.Project)
                 .Include(t => t.TimeLogs).ThenInclude(tl => tl.User)
                 .Include(t => t.TaskType)
@@ -63,6 +66,7 @@ namespace Infrastructure.Persistence.Repositories
         {
             TaskItem? task = await _context.Tasks
                 .Include(t => t.Owner)
+                .Include(t => t.CreatedBy)
                 .Include(t => t.Project)
                 .Include(t => t.TimeLogs).ThenInclude(tl => tl.User)
                 .Include(t => t.TaskType)

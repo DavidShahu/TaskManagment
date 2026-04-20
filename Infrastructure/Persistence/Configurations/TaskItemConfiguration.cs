@@ -62,6 +62,11 @@ namespace Infrastructure.Persistence.Configurations
                 .OnDelete(DeleteBehavior.SetNull)
                 .IsRequired(false);
 
+            builder.HasOne(t => t.CreatedBy)
+                .WithMany()
+                .HasForeignKey(t => t.CreatedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             // Index for common queries
             builder.HasIndex(t => t.OwnerId);
             builder.HasIndex(t => t.ProjectId);

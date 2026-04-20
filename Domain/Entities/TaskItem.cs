@@ -54,6 +54,7 @@ namespace Domain.Entities
         public Project? Project { get; private set; }
         public ICollection<TimeLog> TimeLogs { get; private set; }
             = new List<TimeLog>();
+        public User? CreatedBy { get; private set; }
 
         public TaskType TaskType { get; private set; }
 

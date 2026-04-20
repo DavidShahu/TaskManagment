@@ -53,6 +53,9 @@ namespace Infrastructure.Services
             TaskTypeName = task.TaskType?.Name,
             TaskTypeIcon = task.TaskType?.Icon,
             TaskTypeColor = task.TaskType?.Color,
+
+            CreatedByName = task.CreatedBy is not null ? $"{task.CreatedBy.FirstName} {task.CreatedBy.LastName}" : string.Empty,
+
             TimeLogs = task.TimeLogs.Select(tl => new TimeLogResponse
             {
                 Id = tl.Id,

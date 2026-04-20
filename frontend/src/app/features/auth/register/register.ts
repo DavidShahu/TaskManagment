@@ -30,7 +30,6 @@ export class Register {
 
   onSubmit(): void {
     if (this.request.password !== this.confirmPassword) {
-      this.errorMessage = 'Passwords do not match';
       return;
     }
 

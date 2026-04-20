@@ -24,6 +24,7 @@ export class NotificationService {
   ) {}
 
   private initialized = false;
+  private notificationSubscription: any = null;
 
 
 
@@ -35,10 +36,11 @@ export class NotificationService {
       this.loadNotifications();
       this.loadUnreadCount();
 
-      this.signalRService.notification$.subscribe(notification => {
+    this.notificationSubscription = this.signalRService
+        .notification$.subscribe(notification => {
         this.notifications.update(n => [notification, ...n]);
-        this.unreadCount.update(c => c + 1);
-       });
+        this.unreadCount.update(c => c + 1); 
+    });
     }
 
 
@@ -108,7 +110,11 @@ export class NotificationService {
   }
 
   destroy(): void {
-    this.signalRService.stopConnection();
-    this.initialized = false;
+  this.notificationSubscription?.unsubscribe();
+  this.notificationSubscription = null;
+  this.signalRService.stopConnection();
+  this.initialized = false;
+  this.notifications.set([]);
+  this.unreadCount.set(0);
   }
 }

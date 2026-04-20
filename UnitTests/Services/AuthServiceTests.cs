@@ -39,7 +39,7 @@ namespace UnitTests.Services
                 FirstName = "David",
                 LastName = "Shahu",
                 Email = "david@test.com",
-                Password = "Password123"
+                Password = "Password12!"
             };
 
             _userRepoMock.Setup(r =>

@@ -22,39 +22,52 @@ public class ExceptionHandlingMiddleware
         {
             await _next(context);
         }
-        catch (Exception ex)
+        catch (KeyNotFoundException ex)
         {
-            var correlationId = context.Items["CorrelationId"]?.ToString();
+            await HandleExceptionAsync(context, ex, 404);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            await HandleExceptionAsync(context, ex, 403);
+        }
+        catch (InvalidOperationException ex)
+        {
+            await HandleExceptionAsync(context, ex, 409);
+        }
+        catch (ArgumentException ex)
+        {
+            await HandleExceptionAsync(context, ex, 400);
+        }
+        catch (Exception ex) // ← catches everything else including EF errors
+        {
             _logger.LogError(ex,
-                "Unhandled exception. CorrelationId: {CorrelationId}",
-                correlationId);
-            await HandleExceptionAsync(context, ex, correlationId);
+                "Unhandled exception for {CorrelationId}",
+                context.Items["CorrelationId"]);
+
+            await HandleExceptionAsync(context,
+                new Exception("An internal error occurred. Please try again."),
+                500);
         }
     }
+
 
     private static async Task HandleExceptionAsync(
         HttpContext context,
         Exception ex,
-        string? correlationId)
+        int statusCode)
     {
         context.Response.ContentType = "application/json";
+        context.Response.StatusCode = statusCode;
 
-        context.Response.StatusCode = ex switch
-        {
-            ArgumentException => (int)HttpStatusCode.BadRequest,
-            InvalidOperationException => (int)HttpStatusCode.Conflict,
-            UnauthorizedAccessException => (int)HttpStatusCode.Unauthorized,
-            KeyNotFoundException => (int)HttpStatusCode.NotFound,
-            _ => (int)HttpStatusCode.InternalServerError
-        };
+        var correlationId = context.Items["CorrelationId"]?.ToString();
 
         var response = new
         {
-            Status = context.Response.StatusCode,
+            Status = statusCode,
             Message = ex.Message,
             CorrelationId = correlationId
         };
 
-        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+        await context.Response.WriteAsJsonAsync(response);
     }
 }
