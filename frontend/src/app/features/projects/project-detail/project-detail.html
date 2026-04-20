@@ -125,10 +125,12 @@
             <h6 class="fw-bold mb-0">
               📋 Tasks ({{ tasks.length }})
             </h6>
-            <button class="btn btn-sm btn-primary"
-              (click)="openCreateTask()">
-              + New Task
-            </button>
+            @if (project.isActive) {
+              <button  class="btn btn-sm btn-primary"
+                (click)="openCreateTask()">
+                + New Task
+              </button>
+            }
           </div>
         
           <!-- Filter Tabs -->

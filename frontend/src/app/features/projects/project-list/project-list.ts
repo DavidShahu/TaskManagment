@@ -61,7 +61,7 @@ export class ProjectList implements OnInit  {
   delete(id: string): void {
     this.swal.confirm(
       'Delete Project',
-      'Are you sure? This action cannot be undone.',
+      'Are you sure?',
       'Delete'
     ).then(result => {
       if (result.isConfirmed) {
