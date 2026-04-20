@@ -44,7 +44,13 @@ export class TaskForm implements OnInit {
     private toast: ToastService,
     private taskTypeService: TaskTypeService,
   ) {}
-
+  
+  private toLocalDateString(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
 
   @Input() preselectedProjectId: string | undefined = undefined;
 
@@ -56,9 +62,8 @@ export class TaskForm implements OnInit {
       this.form = {
         title: this.task.title,
         description: this.task.description,
-        dueDate: this.task.dueDate
-          ? new Date(this.task.dueDate).toISOString().split('T')[0]
-          : undefined,
+        dueDate: this.task.dueDate  ? this.toLocalDateString(new Date(this.task.dueDate))
+        : undefined,
         estimatedHours: this.task.estimatedHours,
         projectId: this.task.projectId,
         assignedToUserId: this.task.ownerId,
@@ -66,6 +71,7 @@ export class TaskForm implements OnInit {
       };
     }
 
+    
     this.loadProjects();
     if (this.isAdmin) this.loadUsers();
 

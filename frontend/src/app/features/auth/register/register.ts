@@ -46,7 +46,8 @@ export class Register {
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        this.errorMessage = err.error?.message || 'Registration failed';
+        debugger
+        this.errorMessage = err.message || 'Registration failed';
         this.isLoading = false;
       }
     });

@@ -6,7 +6,7 @@ import { throwError } from 'rxjs';
 export class ErrorHandlerService {
   handle(error: HttpErrorResponse) {
     let message = 'An unexpected error occurred';
-
+    
     if (error.error) {
        if (error.error.Message) {
         message = error.error.Message;

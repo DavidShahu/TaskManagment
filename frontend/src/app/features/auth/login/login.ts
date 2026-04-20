@@ -42,7 +42,7 @@ export class Login {
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        this.errorMessage = err.error?.message || 'Invalid email or password';
+        this.errorMessage = err.error?.message || 'Invalid email or password or your account has been deactivated';
         this.isLoading = false;
       }
     });
