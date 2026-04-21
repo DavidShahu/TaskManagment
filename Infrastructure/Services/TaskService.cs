@@ -119,6 +119,7 @@ namespace Infrastructure.Services
                 if (project is null)
                     throw new KeyNotFoundException("Project not found");
             }
+            Guid? taskTypeId = request.TaskTypeId == Guid.Empty ? null : request.TaskTypeId;
 
             var task = TaskItem.Create(
                 request.Title,
@@ -128,7 +129,7 @@ namespace Infrastructure.Services
                 requestingUserId,
                 request.ProjectId,
                 request.EstimatedHours,
-                request.TaskTypeId);
+                taskTypeId);
 
             await _taskRepository.AddAsync(task, cancellationToken);
             await _taskRepository.SaveChangesAsync(cancellationToken);
@@ -154,14 +155,14 @@ namespace Infrastructure.Services
             if (!isAdmin && task.CreatedByUserId != requestingUserId)
                 throw new UnauthorizedAccessException(
                     "You cannot edit tasks assigned to you by an admin");
-
+            Guid? taskTypeId = request.TaskTypeId == Guid.Empty ? null : request.TaskTypeId;
 
             task.Update(
                 request.Title,
                 request.Description,
                 request.DueDate,
                 request.EstimatedHours,
-                request.TaskTypeId);
+                taskTypeId);
 
             await _taskRepository.SaveChangesAsync(cancellationToken);
             return MapToResponse(task);

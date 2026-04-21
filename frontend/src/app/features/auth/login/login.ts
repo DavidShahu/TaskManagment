@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Auth, LoginRequest } from '../../../core/auth/auth';
+import { ActivatedRoute } from '@angular/router';
+
 @Component({
   selector: 'app-login',
   imports: [CommonModule, FormsModule, RouterModule],
@@ -17,9 +19,12 @@ export class Login {
   isLoading = false;
   errorMessage = '';
 
+  sessionExpired = false;
+
   constructor(
     private authService: Auth,
-    private router: Router
+    private router: Router, 
+    private route: ActivatedRoute
   ) {
 
     this.user = authService.getUser();
@@ -28,6 +33,13 @@ export class Login {
 
   ngOnInit():void{
     debugger
+    this.route.queryParams.subscribe(params => {
+      if (params['reason'] === 'session_expired') {
+        this.sessionExpired = true;
+      }
+    });
+
+    
     if(this.user){
       this.router.navigate(['/dashboard']);
     }

@@ -17,6 +17,17 @@ services:
       retries: 10
       start_period: 30s
 
+  seq:
+    image: datalust/seq:latest
+    container_name: taskflow-seq
+    environment:
+      ACCEPT_EULA: "Y"
+      SEQ_FIRSTRUN_ADMINPASSWORD: "Admin@1234"
+    ports:
+      - "5341:80"   
+    volumes:
+      - seqdata:/data
+
   api:
     build:
       context: .
@@ -31,7 +42,7 @@ services:
       JwtSettings__Audience: "TaskManagement"
       JwtSettings__ExpiryHours: "24"
       FrontendUrl: "http://localhost:4500"
-    # No ports exposed — only accessible internally via nginx
+      Seq__ServerUrl: "http://seq:80"   
     expose:
       - "8080"
     depends_on:
@@ -44,9 +55,10 @@ services:
       dockerfile: Dockerfile
     container_name: taskflow-frontend
     ports:
-      - "4500:80"  # Single entry point for everything
+      - "4500:80"
     depends_on:
       - api
 
 volumes:
   sqldata:
+  seqdata:

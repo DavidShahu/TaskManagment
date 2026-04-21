@@ -39,12 +39,6 @@
       <div class="mb-3">
         <label class="form-label fw-semibold">Task Type</label>
         <div class="task-type-grid">
-          <button type="button"
-            class="type-btn"
-            [class.selected]="!form.taskTypeId"
-            (click)="form.taskTypeId = undefined"> 
-            <span>None</span>
-          </button>
           @for (type of taskTypes; track type.id) {
             <button type="button"
               class="type-btn"

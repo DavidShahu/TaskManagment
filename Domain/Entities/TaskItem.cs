@@ -112,7 +112,7 @@ namespace Domain.Entities
             string? description,
             DateTime? dueDate,
             decimal? estimatedHours,
-            Guid? taskTypeId)
+            Guid? taskTypeId = null)
         {
             if (string.IsNullOrWhiteSpace(title))
                 throw new ArgumentException("Title is required");

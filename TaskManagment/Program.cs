@@ -1,4 +1,4 @@
-using Application.Auth.Interfaces;
+﻿using Application.Auth.Interfaces;
 using Application.Common.Interfaces;
 using Application.Notifications.Interfaces;
 using Application.Projects.Interfaces.Projects;
@@ -80,7 +80,16 @@ builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>()
 
 
 //use serilog
-builder.Host.UseSerilog();
+builder.Host.UseSerilog((context, config) =>
+{
+    var seqUrl = context.Configuration["Seq:ServerUrl"]
+        ?? "http://localhost:5341";
+
+    config
+        .WriteTo.Console()
+        .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
+        .WriteTo.Seq(seqUrl);
+});
 
 
 builder.Services.AddEndpointsApiExplorer();
