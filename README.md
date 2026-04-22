@@ -50,7 +50,7 @@ A full-stack task management platform built with **ASP.NET Core 9** and **Angula
 
 ### DevOps
 - GitHub Actions CI/CD
-- Docker (coming soon)
+- Docker
 
 ---
 
