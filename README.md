@@ -1,4 +1,4 @@
-# TaskFlow — Task Management Platform
+# Task Management Platform
 
 A full-stack task management platform built with **ASP.NET Core 9** and **Angular 19**, featuring project-based task organization, role-based access control, real-time notifications, and time tracking.
 
